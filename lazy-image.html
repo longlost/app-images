@@ -1,0 +1,29 @@
+
+<style>
+      
+  :host {
+    display:          block;
+    overflow:         hidden;
+    background-color: var(--app-background-color, grey);
+  }
+
+  iron-image {
+    height:             100%;
+    width:              100%;
+    --iron-image-width: 100%;
+    /* Important for fade and preload effect to work. */
+    background-color:   inherit; 
+  }
+
+</style>
+
+
+<iron-image id="image"
+            alt="[[alt]]"
+            fade
+            placeholder="[[_lazyPlaceholder]]"
+            preload
+            sizing="[[sizing]]" 
+            src="[[_lazySrc]]"
+            on-loaded-changed="__loadedChanged">
+</iron-image>
