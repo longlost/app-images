@@ -1,0 +1,60 @@
+
+<style>
+
+	:host {
+		display: 				 flex;
+		justify-content: center;
+		align-items: 		 center;
+
+		/*
+			Set 'position' to 'absolute' and wrap
+			this element in a 'relative' positioned 
+			parent to control the final size of 
+			the animation.
+		*/
+
+		position: 			 fixed;
+		top: 						 0px;
+		right: 					 0px;
+		bottom: 				 0px;
+		left: 					 0px;
+		--first-top: 		 0px;
+		--first-left: 	 0px;
+		--first-height:  0px;
+		--first-width: 	 0px;
+	}
+
+	.first {
+		position: absolute;
+		top: 			var(--first-top);
+		left: 		var(--first-left);
+		height: 	var(--first-height);
+		width: 		var(--first-width);
+		overflow: hidden;
+	}
+
+	.last {
+		position: relative;
+		top: 			unset;
+		left: 		unset;
+		height: 	100%;
+		width: 		100%;
+	}
+
+	img {
+		position:  absolute;
+		top: 			 50%;
+		left: 		 50%;
+		width: 		 100%;
+		transform: translate(-50%, -50%);
+	}
+ 
+</style>
+
+
+<div id="outter" 
+		 class="first">
+
+	<img id="img" src="[[src]]"/>
+
+</div>

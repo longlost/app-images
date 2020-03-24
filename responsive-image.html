@@ -1,0 +1,57 @@
+
+<style>
+
+	:host {
+		display:  				inline-block;
+		position: 				relative;
+		width: 	  				100%;
+		overflow: 				hidden;
+		background-color: var(--app-disabled-color);
+	}
+
+	img {
+		width: 	 0px;
+		height:  0px;
+		opacity: 0;
+	}
+
+	.sized-images {
+		height: 						 100%;
+		width:    					 100%;
+		position: 					 absolute;
+		top: 								 0px;
+		left: 							 0px;
+	  background-repeat: 	 no-repeat;
+	  background-position: center center;
+	  overflow: 					 inherit;
+	  border-radius: 			 inherit;
+	  background-clip: 		 border-box;
+	}
+
+	.no-fade {
+		transition: none;
+	}
+
+	#sizedImgDiv {
+		opacity: 		0;
+	  transition: opacity 0.2s ease-in;
+	}
+
+</style>
+
+
+<img id="image"
+		 alt="[[alt]]"
+		 on-load="__imgLoaded"/>
+
+<div id="placeholder" 
+		 class$="sized-images [[_noFadeClass]]"
+		 alt="[[alt]]"
+		 aria-label="[[alt]]">
+</div>
+
+<div id="sizedImgDiv" 
+		 class$="sized-images [[_noFadeClass]]"
+		 alt="[[alt]]"
+		 aria-label="[[alt]]">
+</div>
