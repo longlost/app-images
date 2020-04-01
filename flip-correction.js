@@ -1,14 +1,14 @@
 
 
 /**
-	*
-	*		Helper library for flip-image.js.
-	* 	
-	*		These calculations are used to counter any
-	* 	image distortions created by the FLIP animation.
-	*
-	*
-	**/
+  *
+  *   Helper library for flip-image.js.
+  *   
+  *   These calculations are used to counter any
+  *   image distortions created by the FLIP animation.
+  *
+  *
+  **/
 
 const wSideCoverLandscape   = d => d.imgWidth * d.imgAspect;
 
@@ -395,3 +395,115 @@ export default info => {
     y: yUpright(data)
   };
 };
+
+
+
+
+// Testing a more general approach to the calculations
+// based on geometry instead of piecemeal if statements.
+
+// export default info => {
+
+//   const {
+//     first, 
+//     last, 
+//     naturalHeight, 
+//     naturalWidth, 
+//     rotation, 
+//     sizing
+//   } = info;
+
+//   const imgAspect = naturalWidth / naturalHeight;  
+//   const firstAspect = first.width  / first.height;
+//   const lastAspect  = last.width   / last.height;
+
+//   const invImgAspect   = 1 / imgAspect;
+//   const invFirstAspect = 1 / firstAspect;
+//   const invLastAspect  = 1 / lastAspect;
+
+//   const imgWidth = sizing === 'cover' ? 
+//     Math.max(last.width, (last.height * imgAspect)) : 
+//     Math.min(last.width, (last.height * imgAspect));
+
+//   const imgHeight = last.height;
+
+//   const widthRatio  = last.width  / imgWidth;
+//   const heightRatio = last.height / imgWidth;
+
+//   const data = {
+//     firstAspect,
+//     heightRatio,
+//     imgAspect,
+//     imgHeight,
+//     imgWidth,
+//     invFirstAspect,
+//     invImgAspect,
+//     invLastAspect,
+//     lastAspect,
+//     rotation,
+//     sizing,
+//     widthRatio
+//   };
+
+
+//   const getImgFirst = () => {
+
+//     if (naturalWidth > naturalHeight) {
+//       const h = first.height;
+//       const w = h * imgAspect;
+
+//       return {imgHFirst: h, imgWFirst: w};
+//     }
+
+//     const w = first.width;
+//     const h = w / imgAspect;
+
+//     return {imgHFirst: h, imgWFirst: w};
+//   };
+
+
+//   const {imgHFirst, imgWFirst} = getImgFirst();
+
+
+//   const getScale = ({contFirst, contLast, imgFirst, imgLast}) => {
+
+//     const deltaImg  = imgLast  - imgFirst;
+//     const deltaCont = contLast - contFirst;
+
+//     console.log('deltaImg: ', deltaImg);
+//     console.log('deltaCont: ', deltaCont);
+//     console.log('imgLast: ', imgLast);
+
+//     return 1 - ((deltaImg - deltaCont) / imgLast);
+//   };
+
+
+//   const x = getScale({
+//     contFirst: first.width, 
+//     contLast:  last.width, 
+//     imgFirst:  imgWFirst, 
+//     imgLast:   imgWidth
+//   });
+
+
+//   // const y = 1;
+
+//   const y = getScale({
+//     contFirst: first.height, 
+//     contLast:  last.height, 
+//     imgFirst:  imgHFirst, 
+//     imgLast:   imgHeight
+//   });
+
+
+//   console.log('x: ', x, ' y: ', y);
+//   console.log('target x: ', xUpright(data), ' y: ', yUpright(data));
+
+
+//   // Image not rotated or rotated 180deg.
+//   return {
+//     w: imgWidth,
+//     x,
+//     y
+//   };
+// };

@@ -108,7 +108,7 @@ class FlipImage extends AppElement {
 
       sizing: {
         type: String,
-        value: 'contain' // Or 'contain'.
+        value: 'cover' // Or 'contain'.
       },
 
       // Img element src string.
