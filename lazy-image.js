@@ -18,6 +18,7 @@ import {
   html
 }                 from '@longlost/app-element/app-element.js';
 import {
+  hijackEvent,
   isOnScreen,
   listen,
   schedule,
@@ -204,7 +205,11 @@ class LazyImage extends AppElement {
 
   // Release memory resources.
   async __loadedChanged(event) {
+    hijackEvent(event);
+
     const {value: loaded} = event.detail;
+
+    this.fire('lazy-image-loaded-changed', {value: loaded});
 
     if (loaded) {
       await wait(500); // Wait for src to fade in.
