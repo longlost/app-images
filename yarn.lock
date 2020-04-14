@@ -30,6 +30,13 @@
   dependencies:
     "@longlost/lambda" "^2.0.0"
 
+"@longlost/utils@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@longlost/utils/-/utils-1.4.0.tgz#76b6747ba70b78b9c250daeb359650ecd881f856"
+  integrity sha512-1n5tSWBh7QaTeX95ipxkaIqsy2u458FkpapXGN7bpj5kdxtYCYBUgnpBqJuGAbSlRdOPeJiSxNjjuMg5W3bedA==
+  dependencies:
+    "@longlost/lambda" "^2.2.0"
+
 "@polymer/iron-image@^3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@polymer/iron-image/-/iron-image-3.0.2.tgz#425ee6269634e024dbea726a91a61724ae4402b6"
