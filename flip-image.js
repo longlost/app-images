@@ -44,6 +44,12 @@
   *
   *
   *
+  *    reset() - Void --> Promise --> Void
+  *     
+  *      Closes/resets FLIP element. Must be called before further animations
+  *
+  *
+  *
   *   @customElement
   *   @polymer
   *   @demo demo/index.html
@@ -52,34 +58,11 @@
   **/
 
 
-import {
-  AppElement, 
-  html
-}                 from '@longlost/app-element/app-element.js';
-import {flip}     from '@longlost/animation/animation.js';
-import {schedule} from '@longlost/utils/utils.js';
-import correction from './flip-correction.js';
-import htmlString from './flip-image.html';
-
-
-const getImgNaturals = src => {
-
-  const img = new Image();
-
-  return new Promise((resolve, reject) => {
-
-    img.onload = () => {
-      resolve({
-        naturalHeight: img.naturalHeight, 
-        naturalWidth:  img.naturalWidth
-      });
-    };
-
-    img.onerror = reject;
-
-    img.src = src;
-  });
-};
+import {AppElement, html}   from '@longlost/app-element/app-element.js';
+import {flip}               from '@longlost/animation/animation.js';
+import {naturals, schedule} from '@longlost/utils/utils.js';
+import correction           from './flip-correction.js';
+import htmlString           from './flip-image.html';
 
 
 class FlipImage extends AppElement {
@@ -169,7 +152,7 @@ class FlipImage extends AppElement {
     // Load image to get natural sizing and 
     // guarantee image is rendered before 
     // performing animation.
-    const {naturalHeight, naturalWidth} = await getImgNaturals(this.src);
+    const {naturalHeight, naturalWidth} = await naturals(this.src);
 
     this.style['display'] = 'flex';
 
