@@ -11,8 +11,15 @@
     height:             100%;
     width:              100%;
     --iron-image-width: 100%;
+
+    /*
+      Addresses an issue in Chrome where the image may 
+      render slightly lower than its container.
+    */
+    overflow: visible;
+
     /* Important for fade and preload effect to work. */
-    background-color:   inherit; 
+    background-color: inherit; 
   }
 
 </style>
