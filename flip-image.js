@@ -104,18 +104,11 @@ class FlipImage extends AppElement {
       },
 
       _rotation: {
-        type: Number,
+        type: String,
         computed: '__computeRotation(orientation)'
       }
 
     };
-  }
-
-
-  static get observers() {
-    return [
-      '__measurementsChanged(measurements)'
-    ];
   }
 
 
@@ -133,20 +126,6 @@ class FlipImage extends AppElement {
   }
 
 
-  __measurementsChanged(measurements) {
-    if (!measurements) { return; }
-
-    const {height, left, top, width} = measurements;
-
-    this.updateStyles({
-      '--first-top' :    `${top}px`,
-      '--first-left' :   `${left}px`,
-      '--first-height' : `${height}px`,
-      '--first-width' :  `${width}px`
-    });   
-  }
-
-
   async play() {
 
     // Load image to get natural sizing and 
@@ -156,13 +135,23 @@ class FlipImage extends AppElement {
 
     this.style['display'] = 'flex';
 
-    // FLIP process scales the container up or down to match
-    // its starting size, so these calculations counter-act
-    // the distortion that it creates.
-
     const first = this.measurements;
     const last  = this.getBoundingClientRect();
 
+    // Not setting these styles directly on this.$.outter
+    // because the flip animation uses css classes to override
+    // styles from initial size and placement, to final state.
+    this.updateStyles({
+      '--first-top' :    `${first.top}px`,
+      '--first-left' :   `${first.left}px`,
+      '--first-height' : `${first.height}px`,
+      '--first-width' :  `${first.width}px`
+    }); 
+
+
+    // FLIP process scales the container up or down to match
+    // its starting size, so these calculations counter-act
+    // the distortion that it creates.
     const info = {
       first, 
       last, 
@@ -173,11 +162,12 @@ class FlipImage extends AppElement {
     };
 
     const {w, x, y} = correction(info);
-
     
     const correctionPromise = async () => {
-      
-      this.$.rotate.style['transform'] = `rotate(${this._rotation}deg)`;
+
+      if (this._rotation) {
+        this.$.rotate.style['transform'] = `rotate(${this._rotation}deg)`;
+      }      
 
       this.$.img.style['width']     = `${w}px`; 
       this.$.img.style['transform'] = `translate(-50%, -50%) scale(${x}, ${y})`;
@@ -187,6 +177,7 @@ class FlipImage extends AppElement {
       this.$.img.style['transform']  = '';
       this.$.img.style['transition'] = this.transition;
     };
+
 
     const flipPromise = flip({
       css:       'last',

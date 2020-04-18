@@ -13,37 +13,27 @@
 			the animation.
 		*/
 
-		position: 			 fixed;
-		top: 						 0px;
-		right: 					 0px;
-		bottom: 				 0px;
-		left: 					 0px;
-		--first-top: 		 0px;
-		--first-left: 	 0px;
-		--first-height:  0px;
-		--first-width: 	 0px;
-
-
-		/*shadow does not work with contain.*/
-
-
-		/*--img-shadow: 	 0 4px 5px 0 rgba(0, 0, 0, 0.14),
-                     0 1px 10px 0 rgba(0, 0, 0, 0.12),
-                     0 2px 4px -1px rgba(0, 0, 0, 0.4);*/
+		position: 			fixed;
+		top: 						0px;
+		right: 					0px;
+		bottom: 				0px;
+		left: 					0px;
+		--first-top: 		0px;
+		--first-left: 	0px;
+		--first-height: 0px;
+		--first-width: 	0px;
+		--img-shadow: 	0 4px 5px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 10px 0 rgba(0, 0, 0, 0.12),
+                    0 2px 4px -1px rgba(0, 0, 0, 0.4);
 	}
 
 	.first {
-		position: 	absolute;
-		top: 				var(--first-top);
-		left: 			var(--first-left);
-		height: 		var(--first-height);
-		width: 			var(--first-width);
-
-
-		/*box-shadow: var(--img-shadow);*/
-
-
-		overflow: 	hidden;
+		position: absolute;
+		top: 			var(--first-top);
+		left: 		var(--first-left);
+		height: 	var(--first-height);
+		width: 		var(--first-width);
+		overflow: hidden;
 	}
 
 	.last {
@@ -59,11 +49,12 @@
 	}
 
 	#img {
-		position:  absolute;
-		top: 			 50%;
-		left: 		 50%;
-		width: 		 100%;
-		transform: translate(-50%, -50%);
+		position:  	absolute;
+		top: 			 	50%;
+		left: 		 	50%;
+		width: 		 	100%;
+		transform: 	translate(-50%, -50%);
+		box-shadow: var(--img-shadow);
 	}
  
 </style>
