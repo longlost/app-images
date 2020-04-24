@@ -74,7 +74,14 @@ class FlipImage extends AppElement {
 
 
   static get properties() {
-    return { 
+    return {
+
+      // While in modal mode, the overlay can measure its height 
+      // relative to the bottom of the screen (default),
+      // or it can mearsure its height realtive to the visible 
+      // portion of the screen that is above iOS Safari's 
+      // bottom nav bar.
+      aboveSafariNav: Boolean,
 
       // <img/> alt property.
       alt: {
@@ -112,6 +119,13 @@ class FlipImage extends AppElement {
   }
 
 
+  static get observers() {
+    return [
+      '__aboveSafariNavChanged(aboveSafariNav)'
+    ];
+  }
+
+
   __computeRotation(orientation) {
     switch (orientation) {
       case 3:
@@ -123,6 +137,18 @@ class FlipImage extends AppElement {
       default:
         return '0';
     } 
+  }
+
+
+  __aboveSafariNavChanged(bool) {
+    if (bool) {
+      this.style['bottom'] = '0px';
+      this.style['height'] = 'unset';
+    }
+    else {
+      this.style['bottom'] = 'unset';
+      this.style['height'] = '100vh';
+    }
   }
 
 
