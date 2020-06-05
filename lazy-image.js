@@ -46,6 +46,11 @@ class LazyImage extends AppElement {
         value: ''
       },
 
+      crossorigin: {
+        type: String,
+        value: 'anonymous'
+      },
+
       // Image orientation correction for 
       // photos captured on a device camera.
       orientation: Number,
