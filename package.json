@@ -18,8 +18,8 @@
   "homepage": "https://github.com/longlost/app-images#readme",
   "dependencies": {
     "@longlost/animation": "^2.0.0",
-    "@longlost/app-element": "^1.1.1",
-    "@longlost/utils": "^1.4.0",
+    "@longlost/app-element": "^2.0.0",
+    "@longlost/utils": "^1.4.1",
     "@polymer/iron-image": "^3.0.2"
   }
 }

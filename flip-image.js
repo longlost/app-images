@@ -87,7 +87,12 @@ class FlipImage extends AppElement {
       alt: {
         type: String,
         value: 'FLIP animation interstitial.'
-      }, 
+      },
+
+      crossorigin: {
+        type: String,
+        value: 'anonymous'
+      },
 
       // Initial placement of chosen photo to animate from.
       // A getBoundingClientRect object.
