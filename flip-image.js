@@ -115,6 +115,9 @@ class FlipImage extends AppElement {
         value: 'transform 0.5s cubic-bezier(0.49, 0.01, 0, 1)'
       },
 
+      // Cached image natural sizing.
+      _naturals: Object,
+
       _rotation: {
         type: String,
         computed: '__computeRotation(orientation)'
@@ -126,7 +129,8 @@ class FlipImage extends AppElement {
 
   static get observers() {
     return [
-      '__aboveSafariNavChanged(aboveSafariNav)'
+      '__aboveSafariNavChanged(aboveSafariNav)',
+      '__srcChanged(src)'
     ];
   }
 
@@ -156,13 +160,25 @@ class FlipImage extends AppElement {
     }
   }
 
+  // Cache the image measurements to improve performance.
+  async __srcChanged(src) {
+    this._naturals = undefined; // Clear cached val.
+
+    if (src) {      
+      this._naturals = await naturals(src);
+    }
+  }
+
 
   async play() {
 
-    // Load image to get natural sizing and 
+    // Use cached value when available, but fallback
+    // to loading image now to get natural sizing and 
     // guarantee image is rendered before 
     // performing animation.
-    const {naturalHeight, naturalWidth} = await naturals(this.src);
+    const {naturalHeight, naturalWidth} = this._naturals ? 
+        this._naturals :
+        await naturals(this.src);
 
     this.style['display'] = 'flex';
 

@@ -1,6 +1,6 @@
 {
   "name": "@longlost/app-images",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "A mono-repo of elements designed to make it easy to work with images.",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "dependencies": {
     "@longlost/animation": "^2.0.0",
     "@longlost/app-element": "^2.0.0",
-    "@longlost/utils": "^1.4.1",
+    "@longlost/utils": "^1.5.1",
     "@polymer/iron-image": "^3.0.2"
   }
 }
