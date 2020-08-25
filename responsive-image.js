@@ -5,7 +5,7 @@
   *    Auto lazy loads when in view.
   *
   *    Works in conjunction with static images that 
-  * 	 are handled by webpack responsive-loader.
+  *    are handled by webpack responsive-loader.
   * 
   *
   *
@@ -19,14 +19,14 @@
 import {
   AppElement, 
   html
-}                 from '@longlost/app-element/app-element.js';
+} from '@longlost/app-element/app-element.js';
+
 import {
   isOnScreen, 
-  listen, 
   schedule,
-  unlisten,
   wait
-}                 from '@longlost/utils/utils.js';
+} from '@longlost/utils/utils.js';
+
 import htmlString from './responsive-image.html';
 
 
@@ -86,9 +86,7 @@ class ResponsiveImage extends AppElement {
       _noFadeClass: {
         type: Boolean,
         computed: '__computeNoFadeClass(noFade)'
-      },
-
-      _resizeListenerKey: Object
+      }
 
     };
   }
@@ -104,11 +102,9 @@ class ResponsiveImage extends AppElement {
 
 
   disconnectedCallback() {
-  	super.disconnectedCallback();
+    super.disconnectedCallback();
 
-  	if (this._resizeListenerKey) {
-  		unlisten(this._resizeListenerKey);
-  	}
+    window.removeEventListener('resize', this.__resizeHandler.bind(this));
   }
 
 
@@ -138,6 +134,12 @@ class ResponsiveImage extends AppElement {
   }
 
 
+  async __resizeHandler() {
+    await schedule();
+    this.resize();
+  }
+
+
   async __responsiveChanged(responsive) {
     try {      
       if (!responsive) { return; }
@@ -155,20 +157,13 @@ class ResponsiveImage extends AppElement {
       // Reset for new images.
       this.$.sizedImgDiv.style.opacity = '0';
 
-      if (this._resizeListenerKey) {
-      	unlisten(this._resizeListenerKey);
-      	this._resizeListenerKey = undefined;
-      }
+      window.removeEventListener('resize', this.__resizeHandler.bind(this));
 
       if (this._aspectRatio) {
 
-        const setSize = async () => {
-          await schedule();
-          this.resize();
-        };
+        this.__resizeHandler();
 
-        setSize();
-        this._resizeListenerKey = listen(window, 'resize', setSize);
+        window.addEventListener('resize', this.__resizeHandler.bind(this));
       }
 
       // Wait for dom to settle.

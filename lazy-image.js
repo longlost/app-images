@@ -16,15 +16,15 @@
 import {
   AppElement, 
   html
-}                 from '@longlost/app-element/app-element.js';
+} from '@longlost/app-element/app-element.js';
+
 import {
   hijackEvent,
   isOnScreen,
-  listen,
   schedule,
-  unlisten,
   wait
-}                 from '@longlost/utils/utils.js';
+} from '@longlost/utils/utils.js';
+
 import htmlString from './lazy-image.html';
 import '@polymer/iron-image/iron-image.js';
 
@@ -89,10 +89,7 @@ class LazyImage extends AppElement {
       _lazySrc: String,
 
       // Triggers '__orientationChanged'.
-      _resized: Boolean,
-
-      // Symbol from listen util function.
-      _resizeListenerKey: Object
+      _resized: Boolean
  
     }
   }
@@ -107,22 +104,30 @@ class LazyImage extends AppElement {
   }
 
 
-  async connectedCallback() {
+  connectedCallback() {
     super.connectedCallback();
 
-    this._resizeListenerKey = listen(window, 'resize', async () => {
-      await schedule(); // Allow first layout/paint before measuring
-      await isOnScreen(this, this.trigger);
-      
-      this.__setResized();
-    });
+    window.addEventListener('resize', this.__resizeHandler.bind(this));
   }
 
 
   disconnectedCallback() {
     super.disconnectedCallback();
 
-    unlisten(this._resizeListenerKey);
+    window.removeEventListener('resize', this.__resizeHandler.bind(this));
+  }
+
+
+  __setResized() {
+    this._resized = typeof this._resized === 'boolean' ? !this._resized : true;
+  }
+
+
+  async __resizeHandler() {
+    await schedule(); // Allow first layout/paint before measuring
+    await isOnScreen(this, this.trigger);
+    
+    this.__setResized();
   }
 
 
@@ -220,11 +225,6 @@ class LazyImage extends AppElement {
       await wait(500); // Wait for src to fade in.
       this._lazyPlaceholder = '#';
     }
-  }
-
-
-  __setResized() {
-    this._resized = typeof this._resized === 'boolean' ? !this._resized : true;
   }
 
 }
