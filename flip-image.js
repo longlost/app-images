@@ -185,6 +185,11 @@ class FlipImage extends AppElement {
     const first = this.measurements;
     const last  = this.getBoundingClientRect();
 
+    // Adjust for offsets to final location when
+    // `flip-image` is not fullscreen.
+    first.top  = first.top  - last.top;
+    first.left = first.left - last.left;
+
     // Not setting these styles directly on this.$.outter
     // because the flip animation uses css classes to override
     // styles from initial size and placement, to final state.

@@ -82,6 +82,13 @@ class LazyImage extends AppElement {
         value: 0
       },
 
+      // Fade the src only when there is no placeholder present.
+      _fadeSrc: {
+        type: Boolean,
+        value: true,
+        computed: '__computeFadeSrc(placeholder)'
+      },
+
       // Set after element is visible on screen.
       _lazyPlaceholder: String,
 
@@ -97,6 +104,7 @@ class LazyImage extends AppElement {
 
   static get observers() {
     return [
+      '__fadeScrChanged(_fadeSrc)',
       '__orientationChanged(orientation, _resized)', // '_resized' is only a trigger.
       '__placeholderSrcChanged(placeholder, src, trigger)',
       '__missingAlt(alt, src)'
@@ -115,6 +123,23 @@ class LazyImage extends AppElement {
     super.disconnectedCallback();
 
     window.removeEventListener('resize', this.__resizeHandler.bind(this));
+  }
+
+
+  __computeFadeSrc(placeholder) {
+    return !Boolean(placeholder);
+  }
+
+  // Fade in the `iron-image` if a placeholder is available,
+  // and then instantly switch from placeholder to src when 
+  // src is fully loaded. Otherwise, fade the src in.
+  __fadeScrChanged(fade) {
+    if (fade) {
+      this.$.image.classList.remove('fade-placeholder');
+    }
+    else {
+      this.$.image.classList.add('fade-placeholder');
+    }
   }
 
 
@@ -191,6 +216,8 @@ class LazyImage extends AppElement {
       await schedule(); // Allow first layout/paint before measuring
       await isOnScreen(this, trigger);
 
+      this.$.image.classList.remove('fade-in');
+
       this.__setResized();
 
       // NOT using closure values here to work
@@ -200,9 +227,16 @@ class LazyImage extends AppElement {
       
       if (this.placeholder) {
         this._lazyPlaceholder = this.placeholder;
-      }
 
-      await schedule();
+        await schedule();
+
+        this.$.image.classList.add('fade-in');
+
+        await wait(550);
+      }
+      else {
+        await schedule();
+      }
 
       // NOT using closure values
       this._lazySrc = this.src || '#';
