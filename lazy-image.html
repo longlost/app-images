@@ -3,6 +3,9 @@
       
   :host {
     display:          block;
+    position:         relative;
+    height:           100%;
+    width:            100%;
     overflow:         hidden;
     background-color: var(--app-background-color, grey);
   }
@@ -19,26 +22,39 @@
     overflow: visible;
 
     /* Important for fade and preload effect to work. */
-    background-color: inherit; 
+    background-color: inherit;
   }
 
-  .fade-placeholder {
-    transition: opacity 0.5s ease-out;
-    opacity:    0;
-  }
-
-  .fade-in {
-    opacity: 1;
+  #src {
+    position: absolute;
+    top:      0px;
+    left:     0px;
   }
 
 </style>
 
+<!-- 
+  Using two stacked iron-image elements here because 
+  the native fade transition between `placeholder` and 
+  `src` is inconsistent.
 
-<iron-image id="image"
+  It often flashes the background-color momentarily 
+  when switching to the `src`. 
+-->
+<iron-image id="placeholder"
             alt="[[alt]]"
             crossorigin="[[crossorigin]]"
-            fade="[[_fadeSrc]]"
-            placeholder="[[_lazyPlaceholder]]"
+            fade="[[!noFade]]"
+            preload
+            sizing="[[sizing]]" 
+            src="[[_lazyPlaceholder]]">
+</iron-image>
+
+
+<iron-image id="src"
+            alt="[[alt]]"
+            crossorigin="[[crossorigin]]"
+            fade="[[!noFade]]"
             preload
             sizing="[[sizing]]" 
             src="[[_lazySrc]]"

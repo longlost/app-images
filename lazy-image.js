@@ -51,6 +51,11 @@ class LazyImage extends AppElement {
         value: 'anonymous'
       },
 
+      noFade: {
+        type: Boolean,
+        value: false
+      },
+
       // Image orientation correction for 
       // photos captured on a device camera.
       orientation: Number,
@@ -82,13 +87,6 @@ class LazyImage extends AppElement {
         value: 0
       },
 
-      // Fade the src only when there is no placeholder present.
-      _fadeSrc: {
-        type: Boolean,
-        value: true,
-        computed: '__computeFadeSrc(placeholder)'
-      },
-
       // Set after element is visible on screen.
       _lazyPlaceholder: String,
 
@@ -104,7 +102,6 @@ class LazyImage extends AppElement {
 
   static get observers() {
     return [
-      '__fadeScrChanged(_fadeSrc)',
       '__orientationChanged(orientation, _resized)', // '_resized' is only a trigger.
       '__placeholderSrcChanged(placeholder, src, trigger)',
       '__missingAlt(alt, src)'
@@ -115,31 +112,16 @@ class LazyImage extends AppElement {
   connectedCallback() {
     super.connectedCallback();
 
-    window.addEventListener('resize', this.__resizeHandler.bind(this));
+    this.__resizeHandler = this.__resizeHandler.bind(this);
+
+    window.addEventListener('resize', this.__resizeHandler);
   }
 
 
   disconnectedCallback() {
     super.disconnectedCallback();
 
-    window.removeEventListener('resize', this.__resizeHandler.bind(this));
-  }
-
-
-  __computeFadeSrc(placeholder) {
-    return !Boolean(placeholder);
-  }
-
-  // Fade in the `iron-image` if a placeholder is available,
-  // and then instantly switch from placeholder to src when 
-  // src is fully loaded. Otherwise, fade the src in.
-  __fadeScrChanged(fade) {
-    if (fade) {
-      this.$.image.classList.remove('fade-placeholder');
-    }
-    else {
-      this.$.image.classList.add('fade-placeholder');
-    }
+    window.removeEventListener('resize', this.__resizeHandler);
   }
 
 
@@ -166,11 +148,13 @@ class LazyImage extends AppElement {
   __orientationChanged(num, resized) {
     if (typeof num !== 'number' || typeof resized !== 'boolean') { return; }
 
-    const placeholderDiv = this.select('#placeholder', this.$.image);
-    const srcDiv         = this.select('#sizedImgDiv', this.$.image);
+    const plhPlaceholderDiv = this.select('#placeholder', this.$.placeholder);
+    const plhSrcDiv         = this.select('#sizedImgDiv', this.$.placeholder);
+    const srcPlaceholderDiv = this.select('#placeholder', this.$.src);
+    const srcSrcDiv         = this.select('#sizedImgDiv', this.$.src);
 
     if (num <= 1) {
-      [placeholderDiv, srcDiv].forEach(div => {
+      [plhPlaceholderDiv, plhSrcDiv, srcPlaceholderDiv, srcSrcDiv].forEach(div => {
         div.style.height    = '100%';
         div.style.width     = '100%';
         div.style.top       = '0px';
@@ -180,7 +164,7 @@ class LazyImage extends AppElement {
     }
     else {
 
-      const {height, width} = this.$.image.getBoundingClientRect();      
+      const {height, width} = this.getBoundingClientRect();      
 
       const rotations = {
         3: '180',
@@ -193,7 +177,7 @@ class LazyImage extends AppElement {
       const hRatio = deg === '180' ? 100 : ((width / height) * 100);
       const wRatio = deg === '180' ? 100 : ((height / width) * 100);
 
-      [placeholderDiv, srcDiv].forEach(div => {
+      [plhPlaceholderDiv, plhSrcDiv, srcPlaceholderDiv, srcSrcDiv].forEach(div => {
         div.style.height    = `${hRatio}%`;
         div.style.width     = `${wRatio}%`;
         div.style.top       = '50%';
@@ -201,6 +185,26 @@ class LazyImage extends AppElement {
         div.style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
       });
     }
+  }
+
+
+  __waitForPlaceholder() {
+    return new Promise(resolve => {
+
+      const handler = event => {
+        const {value} = event.detail;
+
+        if (value) {
+          this.$.placeholder.removeEventListener('loaded-changed', handler);
+          this.$.placeholder.removeEventListener('error-changed',  handler);
+
+          resolve();
+        }
+      };
+
+      this.$.placeholder.addEventListener('loaded-changed', handler);
+      this.$.placeholder.addEventListener('error-changed',  handler);
+    });
   }
 
 
@@ -216,29 +220,34 @@ class LazyImage extends AppElement {
       await schedule(); // Allow first layout/paint before measuring
       await isOnScreen(this, trigger);
 
-      this.$.image.classList.remove('fade-in');
-
       this.__setResized();
 
-      // NOT using closure values here to work
+      // NOTICE!! - NOT using closure values here to work
       // correctly within template repeaters
       // where data can be changed by the time the 
       // above schedule and isOnScreen have resolved.
       
-      if (this.placeholder) {
+      // Wait for placeholder to fully load or fail
+      // before starting to load the src.
+      if (this.placeholder) {        
+
+        this.$.src.style['background-color'] = 'transparent';
+
+        await schedule();
+
         this._lazyPlaceholder = this.placeholder;
 
-        await schedule();
+        await this.__waitForPlaceholder();
 
-        this.$.image.classList.add('fade-in');
-
-        await wait(550);
+        this.fire('lazy-image-placeholder-loaded-changed', {value: true});
       }
       else {
-        await schedule();
+        this.$.src.style['background-color'] = 'inherit';
       }
 
-      // NOT using closure values
+      await schedule();
+
+      // NOT using closure values here!
       this._lazySrc = this.src || '#';
     }
     catch (error) {
@@ -247,7 +256,7 @@ class LazyImage extends AppElement {
     }
   }
 
-  // Release memory resources.
+  
   async __loadedChanged(event) {
     hijackEvent(event);
 
@@ -257,6 +266,8 @@ class LazyImage extends AppElement {
 
     if (loaded) {
       await wait(500); // Wait for src to fade in.
+
+      // Release memory resources.
       this._lazyPlaceholder = '#';
     }
   }
