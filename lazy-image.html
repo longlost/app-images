@@ -22,13 +22,22 @@
     background-color: inherit; 
   }
 
+  .fade-placeholder {
+    transition: opacity 0.5s ease-out;
+    opacity:    0;
+  }
+
+  .fade-in {
+    opacity: 1;
+  }
+
 </style>
 
 
 <iron-image id="image"
             alt="[[alt]]"
             crossorigin="[[crossorigin]]"
-            fade
+            fade="[[_fadeSrc]]"
             placeholder="[[_lazyPlaceholder]]"
             preload
             sizing="[[sizing]]" 
