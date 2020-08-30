@@ -101,10 +101,17 @@ class ResponsiveImage extends AppElement {
   }
 
 
+  constructor() {
+    super();
+
+    this.__resizeHandler = this.__resizeHandler.bind(this);
+  }
+
+
   disconnectedCallback() {
     super.disconnectedCallback();
 
-    window.removeEventListener('resize', this.__resizeHandler.bind(this));
+    window.removeEventListener('resize', this.__resizeHandler);
   }
 
 
@@ -157,13 +164,13 @@ class ResponsiveImage extends AppElement {
       // Reset for new images.
       this.$.sizedImgDiv.style.opacity = '0';
 
-      window.removeEventListener('resize', this.__resizeHandler.bind(this));
+      window.removeEventListener('resize', this.__resizeHandler);
 
       if (this._aspectRatio) {
 
         this.__resizeHandler();
 
-        window.addEventListener('resize', this.__resizeHandler.bind(this));
+        window.addEventListener('resize', this.__resizeHandler);
       }
 
       // Wait for dom to settle.

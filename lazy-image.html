@@ -47,7 +47,9 @@
             fade="[[!noFade]]"
             preload
             sizing="[[sizing]]" 
-            src="[[_lazyPlaceholder]]">
+            src="[[_lazyPlaceholder]]"
+            on-error-changed="__placeholderErrorChangedHandler"
+            on-loaded-changed="__placeholderLoadedChangedHandler">
 </iron-image>
 
 
@@ -58,5 +60,6 @@
             preload
             sizing="[[sizing]]" 
             src="[[_lazySrc]]"
-            on-loaded-changed="__loadedChanged">
+            on-error-changed="__errorChangedHandler"
+            on-loaded-changed="__loadedChangedHandler">
 </iron-image>
