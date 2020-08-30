@@ -164,8 +164,13 @@ class FlipImage extends AppElement {
   async __srcChanged(src) {
     this._naturals = undefined; // Clear cached val.
 
-    if (src) {      
-      this._naturals = await naturals(src);
+    if (src) {
+      try {
+        this._naturals = await naturals(src);
+      } 
+      catch (_) {
+        this._naturals = undefined;
+      } 
     }
   }
 

@@ -51,6 +51,10 @@ class LazyImage extends AppElement {
         value: 'anonymous'
       },
 
+      error: Boolean,
+
+      loaded: Boolean,
+
       noFade: {
         type: Boolean,
         value: false
@@ -63,6 +67,10 @@ class LazyImage extends AppElement {
       // Set this to a base64 string or 
       // thumbnail for fast initial loading.
       placeholder: String,
+
+      placeholderError: Boolean,
+
+      placeholderLoaded: Boolean,
 
       // Image sizing type.
       sizing: {
@@ -102,7 +110,11 @@ class LazyImage extends AppElement {
 
   static get observers() {
     return [
+      '__errorChanged(error)',
+      '__loadedChanged(loaded)',
       '__orientationChanged(orientation, _resized)', // '_resized' is only a trigger.
+      '__placeholderErrorChanged(placeholderError)',
+      '__placeholderLoadedChanged(placeholderLoaded)',
       '__placeholderSrcChanged(placeholder, src, trigger)',
       '__missingAlt(alt, src)'
     ];
@@ -142,6 +154,16 @@ class LazyImage extends AppElement {
     if (!alt && (src && src !== '#')) {
       console.warn(this, ` Missing alt tag for ${src}`);
     } 
+  }
+
+
+  __errorChanged(error) {
+    this.fire('lazy-image-error-changed', {value: error});
+  }
+
+
+  __loadedChanged(loaded) {
+    this.fire('lazy-image-loaded-changed', {value: loaded});
   }
 
 
@@ -185,6 +207,16 @@ class LazyImage extends AppElement {
         div.style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
       });
     }
+  }
+
+
+  __placeholderErrorChanged(error) {
+    this.fire('lazy-image-placeholder-error-changed', {value: error});
+  }
+
+
+  __placeholderLoadedChanged(loaded) {
+    this.fire('lazy-image-placeholder-loaded-changed', {value: loaded});
   }
 
 
@@ -238,8 +270,6 @@ class LazyImage extends AppElement {
         this._lazyPlaceholder = this.placeholder;
 
         await this.__waitForPlaceholder();
-
-        this.fire('lazy-image-placeholder-loaded-changed', {value: true});
       }
       else {
         this.$.src.style['background-color'] = 'inherit';
@@ -256,15 +286,44 @@ class LazyImage extends AppElement {
     }
   }
 
-  
-  async __loadedChanged(event) {
+
+  __placeholderErrorChangedHandler(event) {
+
+    // NOT using `hijackEvent`, `consumeEvent` or 
+    // `event.stopImmediatePropagation` here as to 
+    // not break the listeners in the 
+    // `__waitForPlaceholder` method.
+    event.stopPropagation();
+
+    this.placeholderError = event.detail.value;
+  }
+
+
+  __placeholderLoadedChangedHandler(event) {
+
+    // NOT using `hijackEvent`, `consumeEvent` or 
+    // `event.stopImmediatePropagation` here as to 
+    // not break the listeners in the 
+    // `__waitForPlaceholder` method.
+    event.stopPropagation();
+
+    this.placeholderLoaded = event.detail.value;
+  }
+
+
+  __errorChangedHandler(event) {
     hijackEvent(event);
 
-    const {value: loaded} = event.detail;
+    this.error = event.detail.value;
+  }
 
-    this.fire('lazy-image-loaded-changed', {value: loaded});
+  
+  async __loadedChangedHandler(event) {
+    hijackEvent(event);
 
-    if (loaded) {
+    this.loaded = event.detail.value;
+
+    if (this.loaded) {
       await wait(500); // Wait for src to fade in.
 
       // Release memory resources.
