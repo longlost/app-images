@@ -187,13 +187,14 @@ class FlipImage extends AppElement {
 
     this.style['display'] = 'flex';
 
-    const first = this.measurements;
     const last  = this.getBoundingClientRect();
 
     // Adjust for offsets to final location when
     // `flip-image` is not fullscreen.
-    first.top  = first.top  - last.top;
-    first.left = first.left - last.left;
+    const top  = this.measurements.top  - last.top;
+    const left = this.measurements.left - last.left;
+
+    const first = {...this.measurements, top, left};
 
     // Not setting these styles directly on this.$.outter
     // because the flip animation uses css classes to override
@@ -252,10 +253,10 @@ class FlipImage extends AppElement {
     this.style['display'] = 'none';
 
     this.$.outter.classList.remove('last');
-    this.$.outter.style['transition'] = 'none';
+    this.$.outter.style['transition'] = 'unset';
 
-    this.$.img.style['transform']  = '';
-    this.$.img.style['transition'] = 'none';  
+    this.$.img.style['transform']  = 'unset';
+    this.$.img.style['transition'] = 'unset';  
     this.$.img.style['width']      = '100%';
   }
 
