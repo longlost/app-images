@@ -2,13 +2,13 @@
 # yarn lockfile v1
 
 
-"@longlost/animation@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@longlost/animation/-/animation-2.0.0.tgz#13f6772eeaaf73bd14e53cdfdcf27ffae6fe8d26"
-  integrity sha512-fZKR0vcnyesFAQTvcsLLXdK5RWMwpqotNHdY9xieuufn5wpEXylcUJyEnD2HiKi7lzmHSBiJLjVx2LR5hRkvEA==
+"@longlost/animation@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@longlost/animation/-/animation-2.1.0.tgz#1b233e448ed9c3403ea2ee985f5c8ef5902e5e90"
+  integrity sha512-AN2hfOgL9q+bDKnafslsOuuPLpFOvRVQ6Up1vYIJhrR2EqtBJ/ztK+XSvFGFN3/PORzD14oQ0Lo6pOg4xyizxA==
   dependencies:
     "@longlost/lambda" "^2.2.0"
-    "@longlost/utils" "^1.3.5"
+    "@longlost/utils" "^2.0.0"
 
 "@longlost/app-element@^2.0.0":
   version "2.0.0"
@@ -18,17 +18,10 @@
     "@longlost/utils" "^1.4.0"
     "@polymer/polymer" "^3.4.1"
 
-"@longlost/lambda@^2.0.0", "@longlost/lambda@^2.2.0":
+"@longlost/lambda@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@longlost/lambda/-/lambda-2.2.0.tgz#f9ae362590222896d64272df580a281929081051"
   integrity sha512-hjwZPIcs1FPC1tHG6moCAX0bjtFHIRqVg/jBgsnLhGV0p3Dc0bGo1Z+lGYhEEKZnZFgxhxHY3+PBXw0brgPkPg==
-
-"@longlost/utils@^1.3.5":
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/@longlost/utils/-/utils-1.3.5.tgz#400f36c28acf4f63039fb3b400ffc9db52a0caca"
-  integrity sha512-Eh2MNzsn/0QgR2OkHGmQpPhFpn1UfoQyIjTSdTyzqr3AqcuGQV7pspnG7FBcm5Ina1Uf3rPz6zeX6sXHkuwiKA==
-  dependencies:
-    "@longlost/lambda" "^2.0.0"
 
 "@longlost/utils@^1.4.0":
   version "1.4.0"
