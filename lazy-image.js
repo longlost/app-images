@@ -16,14 +16,14 @@
 import {
   AppElement, 
   html
-} from '@longlost/app-element/app-element.js';
+} from '@longlost/app-core/app-element.js';
 
 import {
   hijackEvent,
   isOnScreen,
   schedule,
   wait
-} from '@longlost/utils/utils.js';
+} from '@longlost/app-core/utils.js';
 
 import htmlString from './lazy-image.html';
 import '@polymer/iron-image/iron-image.js';
