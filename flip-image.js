@@ -58,9 +58,9 @@
   **/
 
 
-import {AppElement, html}   from '@longlost/app-element/app-element.js';
-import {flip}               from '@longlost/animation/animation.js';
-import {naturals, schedule} from '@longlost/utils/utils.js';
+import {AppElement, html}   from '@longlost/app-core/app-element.js';
+import {flip}               from '@longlost/app-core/animation.js';
+import {naturals, schedule} from '@longlost/app-core/utils.js';
 import correction           from './flip-correction.js';
 import htmlString           from './flip-image.html';
 
