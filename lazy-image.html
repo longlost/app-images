@@ -2,12 +2,13 @@
 <style>
       
   :host {
-    display:          block;
-    position:         relative;
-    height:           100%;
-    width:            100%;
-    overflow:         hidden;
-    background-color: var(--app-background-color, grey);
+    display:            block;
+    position:           relative;
+    height:             100%;
+    width:              100%;
+    overflow:           hidden;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    background-color:   var(--app-background-color, grey);
   }
 
   iron-image {
@@ -35,7 +36,7 @@
 
 <!-- 
   Using two stacked iron-image elements here because 
-  the native fade transition between `placeholder` and 
+  its fade transition between `placeholder` and 
   `src` is inconsistent.
 
   It often flashes the background-color momentarily 

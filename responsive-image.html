@@ -2,11 +2,12 @@
 <style>
 
 	:host {
-		display:  				inline-block;
-		position: 				relative;
-		width: 	  				100%;
-		overflow: 				hidden;
-		background-color: var(--app-disabled-color);
+		display:  				  block;
+		position: 				  relative;
+		width: 	  				  100%;
+		overflow: 				  hidden;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+		background-color:   var(--app-background-color, grey);
 	}
 
 	img {
@@ -42,7 +43,8 @@
 
 <img id="image"
 		 alt="[[alt]]"
-		 on-load="__imgLoaded"/>
+		 on-error="__errorHandler"
+		 on-load="__loadHandler"/>
 
 <div id="placeholder" 
 		 class$="sized-images [[_noFadeClass]]"
