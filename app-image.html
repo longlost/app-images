@@ -1,0 +1,181 @@
+
+<style include="app-shared-styles">
+
+  :host {
+    --app-image-border-radius:           0px;
+    --app-image-keyboard-selected-color: var(--app-secondary-color);
+    --app-image-keyboard-selected-size:  2px;
+    --app-image-font-size:               18px;
+
+    display:          block;
+    position:         relative;
+    border-radius:    var(--app-image-border-radius);
+    background-color: var(--app-background-color, grey);
+    color:            currentColor;
+
+    /* Do NOT use directly! NOT part of public API. Use the 'aspect' property. */
+    --before-aspect-ratio:          1;
+    --before-fill-height:           100%;
+    --before-fill-padding-bottom:   unset;
+    --before-aspect-height:         0px;
+    --before-aspect-padding-bottom: calc(100% / (var(--before-aspect-ratio)));
+
+    --before-height:         var(--before-fill-height);
+    --before-padding-bottom: var(--before-fill-padding-bottom);
+  }
+
+  /* Css hack for setting an aspect-ratio. */
+  :host::before {
+    content:        '';
+    display:        block;
+    width:          100%;
+    height:         var(--before-height);
+    padding-bottom: var(--before-padding-bottom);
+  }
+
+  :host([aspect="auto"]) paper-button {
+    position: relative;
+  }
+
+  paper-button {   
+    position:         absolute;
+    top:              0px;
+    left:             0px;
+    height:           100%;
+    width:            100%;
+    margin:           0px;
+    padding:          0px;
+    border-radius:    inherit;
+    background-color: inherit;
+    color:            currentColor;
+  }
+
+  paper-button[disabled] {
+    background-color: var(--app-disabled-color);
+    color:            var(--app-disabled-text);
+  }
+
+  paper-button[disabled] .img {    
+    filter: grayscale(1);
+  }
+
+  /* 
+    Keyboard-only focus styles. 
+    Must have an inner element with -1 tabindex for this to work.
+  */
+  #content {
+    display:         flex;
+    justify-content: center;
+    align-items:     center;
+    position:        relative;
+    height:          100%;
+    width:           100%;
+    border-radius:   var(--app-image-border-radius);
+  }
+
+  /* Keyboard-only focus styles. */
+  #content::after {    
+    content:         '';
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width:  100%;
+    border-radius: inherit;
+  }
+
+  /* Keyboard-only focus styles. */
+  paper-button:focus > #content::after {
+    box-shadow: 0 0 0 var(--app-image-keyboard-selected-size) var(--app-image-keyboard-selected-color) inset;
+  }
+
+  /* Keyboard-only focus styles. */
+  paper-button:focus,
+  #content:focus {
+    outline: none;
+  }
+
+  iron-icon {
+    position: absolute;
+    height:   50%;
+    width:    50%;
+    opacity:  0.3;
+  }
+
+  .img {
+    height: 100%; 
+    width:  100%;
+    background-color: inherit;
+  }
+
+  p {    
+    position:   absolute;
+    font-size:  var(--app-image-font-size);
+    text-align: center;
+    margin:     0px;
+  }
+
+</style>
+
+
+<paper-button id="button"
+              aria-labelledby="text"
+              disabled="[[disabled]]"
+              noink="[[!button]]"
+              raised="[[raised]]"
+              tabindex$="[[_tabindex]]"
+              on-transitionend="__transitionendHandler">
+
+  <!-- Keyboard-only focus hack. Required for -1 tabindex. -->
+  <div id="content" 
+       class="shared-border-radius-mask"
+       tabindex="-1">
+
+    <iron-icon icon="[[icon]]" 
+               tabindex="-1">
+    </iron-icon>
+
+    <template is="dom-if"
+              if="[[_stampLazy]]"
+              restamp>
+      <lazy-image class="img"
+                  alt="[[_alt]]"
+                  enable-auto-sizing="[[_enableLazyImageAutoSizing]]"
+                  no-fade="[[noFade]]"
+                  orientation="[[orientation]]"
+                  placeholder="[[_placeholder]]"
+                  src="[[_src]]"
+                  sizing="[[sizing]]"
+                  tabindex="-1"
+                  trigger="[[trigger]]"
+                  on-lazy-image-error-changed="__errorChangedHandler"
+                  on-lazy-image-loaded-changed="__loadedChangedHandler">
+      </lazy-image> 
+    </template>
+
+    <template is="dom-if"
+              if="[[_stampResponsive]]"
+              restamp>
+      <responsive-image class="img"
+                        alt="[[_alt]]"
+                        disable-auto-sizing="[[!_enableResponsiveImageAutoSizing]]"
+                        no-fade="[[noFade]]"
+                        sizing="[[sizing]]"
+                        src="[[_src]]"
+                        tabindex="-1"
+                        trigger="[[trigger]]"
+                        on-responsive-image-error-changed="__errorChangedHandler"
+                        on-responsive-image-loaded-changed="__loadedChangedHandler">
+      </responsive-image> 
+    </template>
+
+    <p id="text"
+       class="shared-no-select" 
+       tabindex="-1">
+      [[text]]
+    </p>
+
+  </div>
+
+</paper-button>

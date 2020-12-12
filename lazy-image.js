@@ -21,15 +21,18 @@ import {
 import {
   hijackEvent,
   isOnScreen,
+  naturals,
   schedule,
   wait
 } from '@longlost/app-core/utils.js';
+
+import {AppImageMixin} from './app-image-mixin.js';
 
 import htmlString from './lazy-image.html';
 import '@polymer/iron-image/iron-image.js';
 
 
-class LazyImage extends AppElement {
+class LazyImage extends AppImageMixin(AppElement) {
   static get is() { return 'lazy-image'; }
 
   static get template() {
@@ -40,25 +43,19 @@ class LazyImage extends AppElement {
   static get properties() {
     return {
 
-      // Image alt tag.
-      alt: {
-        type: String,
-        value: ''
-      },
-
       crossorigin: {
         type: String,
         value: 'anonymous'
       },
 
-      error: Boolean,
-
-      loaded: Boolean,
-
-      noFade: {
-        type: Boolean,
-        value: false
-      },
+      // Must provide a placeholder, which is 
+      // loaded to determine the image's aspect ratio.
+      //
+      // WARNING! - Use this carefully as it can lead to 
+      //            poor UX caused by layout shifting.
+      //
+      // A valid 'placeholder' is required for auto-sizing.
+      enableAutoSizing: Boolean,
 
       // Image orientation correction for 
       // photos captured on a device camera.
@@ -72,27 +69,10 @@ class LazyImage extends AppElement {
 
       placeholderLoaded: Boolean,
 
-      // Image sizing type.
-      sizing: {
+      _elementType: {
         type: String,
-        value: 'cover' // Or 'contain'.
-      },
-
-      // Full image url string.
-      src: String,
-
-      // The distance in pixels to pad
-      // to the carousel trigger threshold.
-      // For instance, 0 would mean that the
-      // next lazy image would not start to download
-      // until a single pixel intersects the edge of
-      // the carousel.
-      // Or 128 means that the image would start to
-      // download 128px before the next image comes
-      // into view.
-      trigger: {
-        type: Number,
-        value: 0
+        value: 'lazy-image',
+        readOnly: true
       },
 
       // Set after element is visible on screen.
@@ -101,8 +81,13 @@ class LazyImage extends AppElement {
       // Set after element is visible on screen.
       _lazySrc: String,
 
-      // Triggers '__orientationChanged'.
-      _resized: Boolean
+      // Determines when to use ResizeObserver to size the element
+      // based on the image's intrisic sizing.
+      // See 'app-image-mixin.js'.
+      _shouldResize: {
+        type: Boolean,
+        computed: '__computeShouldResize(enableAutoSizing, orientation)'
+      }
  
     }
   }
@@ -110,65 +95,32 @@ class LazyImage extends AppElement {
 
   static get observers() {
     return [
-      '__errorChanged(error)',
-      '__loadedChanged(loaded)',
-      '__orientationChanged(orientation, _resized)', // '_resized' is only a trigger.
+      '__enableAutoSizingLazyPlaceholderChanged(enableAutoSizing, _lazyPlaceholder)',
+      '__orientationHeightWidthChanged(orientation, _height, _width)',
       '__placeholderErrorChanged(placeholderError)',
       '__placeholderLoadedChanged(placeholderLoaded)',
-      '__placeholderSrcChanged(placeholder, src, trigger)',
-      '__missingAlt(alt, src)'
+      '__placeholderSrcChanged(placeholder, src)'
     ];
   }
 
 
-  connectedCallback() {
-    super.connectedCallback();
-
-    this.__resizeHandler = this.__resizeHandler.bind(this);
-
-    window.addEventListener('resize', this.__resizeHandler);
+  __computeShouldResize(enable, orientation) {
+    return enable || typeof orientation === 'number';
   }
 
 
-  disconnectedCallback() {
-    super.disconnectedCallback();
+  async __enableAutoSizingLazyPlaceholderChanged(enable, placeholder) {
+    if (!enable || !placeholder || placeholder === '#') { return; }
 
-    window.removeEventListener('resize', this.__resizeHandler);
+    const {naturalHeight, naturalWidth} = await naturals(placeholder, this.crossorigin);
+
+    this._naturalHeight = naturalHeight;
+    this._naturalWidth  = naturalWidth;
   }
 
 
-  __setResized() {
-    this._resized = typeof this._resized === 'boolean' ? !this._resized : true;
-  }
-
-
-  async __resizeHandler() {
-    await schedule(); // Allow first layout/paint before measuring
-    await isOnScreen(this, this.trigger);
-    
-    this.__setResized();
-  }
-
-
-  __missingAlt(alt, src) {
-    if (!alt && (src && src !== '#')) {
-      console.warn(this, ` Missing alt tag for ${src}`);
-    } 
-  }
-
-
-  __errorChanged(error) {
-    this.fire('lazy-image-error-changed', {value: error});
-  }
-
-
-  __loadedChanged(loaded) {
-    this.fire('lazy-image-loaded-changed', {value: loaded});
-  }
-
-
-  __orientationChanged(num, resized) {
-    if (typeof num !== 'number' || typeof resized !== 'boolean') { return; }
+  __orientationHeightWidthChanged(num, height, width) {
+    if (typeof num !== 'number' || !height || !width) { return; }
 
     const plhPlaceholderDiv = this.select('#placeholder', this.$.placeholder);
     const plhSrcDiv         = this.select('#sizedImgDiv', this.$.placeholder);
@@ -185,8 +137,6 @@ class LazyImage extends AppElement {
       });
     }
     else {
-
-      const {height, width} = this.getBoundingClientRect();      
 
       const rotations = {
         3: '180',
@@ -211,36 +161,16 @@ class LazyImage extends AppElement {
 
 
   __placeholderErrorChanged(error) {
-    this.fire('lazy-image-placeholder-error-changed', {value: error});
+    this.fire(`${this._elementType}-placeholder-error-changed`, {value: error});
   }
 
 
   __placeholderLoadedChanged(loaded) {
-    this.fire('lazy-image-placeholder-loaded-changed', {value: loaded});
+    this.fire(`${this._elementType}-placeholder-loaded-changed`, {value: loaded});
   }
 
 
-  __waitForPlaceholder() {
-    return new Promise(resolve => {
-
-      const handler = event => {
-        const {value} = event.detail;
-
-        if (value) {
-          this.$.placeholder.removeEventListener('loaded-changed', handler);
-          this.$.placeholder.removeEventListener('error-changed',  handler);
-
-          resolve();
-        }
-      };
-
-      this.$.placeholder.addEventListener('loaded-changed', handler);
-      this.$.placeholder.addEventListener('error-changed',  handler);
-    });
-  }
-
-
-  async __placeholderSrcChanged(placeholder, src, trigger) {
+  async __placeholderSrcChanged(placeholder, src) {
     try {
       
       if (!placeholder && !src) { 
@@ -249,10 +179,7 @@ class LazyImage extends AppElement {
         return; 
       }
 
-      await schedule(); // Allow first layout/paint before measuring
-      await isOnScreen(this, trigger);
-
-      this.__setResized();
+      await isOnScreen(this, this.trigger);
 
       // NOTICE!! - NOT using closure values here to work
       // correctly within template repeaters
@@ -261,7 +188,7 @@ class LazyImage extends AppElement {
       
       // Wait for placeholder to fully load or fail
       // before starting to load the src.
-      if (this.placeholder) {        
+      if (this.placeholder && (this.placeholder !== this._lazyPlaceholder)) {        
 
         this.$.src.style['background-color'] = 'transparent';
 
@@ -281,7 +208,7 @@ class LazyImage extends AppElement {
       this._lazySrc = this.src || '#';
     }
     catch (error) {
-      if (error === 'Element removed.') { return; }
+      if (error === 'Element removed.') { return; } // Noop for isOnScreen rejection.
       console.error(error);
     }
   }
@@ -329,6 +256,26 @@ class LazyImage extends AppElement {
       // Release memory resources.
       this._lazyPlaceholder = '#';
     }
+  }
+
+
+  __waitForPlaceholder() {
+    return new Promise(resolve => {
+
+      const handler = event => {
+        const {value} = event.detail;
+
+        if (value) {
+          this.$.placeholder.removeEventListener('loaded-changed', handler);
+          this.$.placeholder.removeEventListener('error-changed',  handler);
+
+          resolve();
+        }
+      };
+
+      this.$.placeholder.addEventListener('loaded-changed', handler);
+      this.$.placeholder.addEventListener('error-changed',  handler);
+    });
   }
 
 }
