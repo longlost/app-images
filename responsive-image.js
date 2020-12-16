@@ -52,11 +52,6 @@ class ResponsiveImage extends AppImageMixin(AppElement) {
         readOnly: true
       },
 
-      _noFadeClass: {
-        type: Boolean,
-        computed: '__computeNoFadeClass(noFade)'
-      },
-
       // Determines when to use ResizeObserver to size the element
       // based on the image's intrisic sizing.
       // See 'app-image-mixin.js'.
@@ -74,11 +69,6 @@ class ResponsiveImage extends AppImageMixin(AppElement) {
       '__sizingChanged(sizing)',
       '__srcChanged(src)'
     ];
-  }
-
-
-  __computeNoFadeClass(noFade) {
-    return noFade ? 'no-fade' : '';
   }
 
 

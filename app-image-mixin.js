@@ -60,10 +60,12 @@ export const AppImageMixin = superClass => {
 
 	      // The distance in pixels to pad
 	      // to the carousel trigger threshold.
+	      //
 	      // For instance, 0 would mean that the
 	      // next lazy image would not start to download
 	      // until a single pixel intersects the edge of
 	      // the carousel.
+	      //
 	      // Or 128 means that the image would start to
 	      // download 128px before the next image comes
 	      // into view.
@@ -103,7 +105,7 @@ export const AppImageMixin = superClass => {
 
 	  static get observers() {
 	    return [
-	      '__altSrcChanged(alt, src)',
+	      '__altSrcChanged(alt, src, _alt, _elementType)',
 	      '__aspectWidthChanged(_aspect, _width)',
 	      '__errorChanged(error)',
 	      '__loadedChanged(loaded)',
@@ -127,8 +129,11 @@ export const AppImageMixin = superClass => {
 	  }
 
 
-	  __altSrcChanged(alt, src) {
-	    if (!alt && (src && src !== '#')) {
+	  __altSrcChanged(alt, src, computedAlt, type) {
+
+	  	const altToTest = type === 'app-image' ? computedAlt : alt;
+
+	    if (!altToTest && (src && src !== '#')) {
 	      console.warn(this, ` Missing alt tag for ${src}`);
 	    } 
 	  }	 

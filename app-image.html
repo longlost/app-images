@@ -2,19 +2,24 @@
 <style include="app-shared-styles">
 
   :host {
+
+    --app-image-background-color:        var(--app-background-color, grey);
     --app-image-border-radius:           0px;
     --app-image-keyboard-selected-color: var(--app-secondary-color);
     --app-image-keyboard-selected-size:  2px;
     --app-image-font-size:               18px;
 
-    display:          block;
-    position:         relative;
-    border-radius:    var(--app-image-border-radius);
-    background-color: var(--app-background-color, grey);
-    color:            currentColor;
+    display:  block;
+    position: relative;
+    color:    currentColor;
 
-    /* Do NOT use directly! NOT part of public API. Use the 'aspect' property. */
-    --before-aspect-ratio:          1;
+
+    /* Do NOT use any the following directly! NOT part of public API. */
+
+    background-color: var(--app-image-background-color);    
+    border-radius:    var(--app-image-border-radius);
+
+    --before-aspect-ratio:          1; /* Must use the 'aspect' property. */
     --before-fill-height:           100%;
     --before-fill-padding-bottom:   unset;
     --before-aspect-height:         0px;
@@ -48,6 +53,15 @@
     border-radius:    inherit;
     background-color: inherit;
     color:            currentColor;
+  }
+
+  /*
+    Safari and paper-ripple fix. 
+    Without this definition, the ripple is 
+    triggered even though 'noink' is true.
+  */
+  paper-button[tabindex="-1"] {
+    pointer-events: none;
   }
 
   paper-button[disabled] {
@@ -96,17 +110,10 @@
     outline: none;
   }
 
-  iron-icon {
-    position: absolute;
-    height:   50%;
-    width:    50%;
-    opacity:  0.3;
-  }
-
   .img {
     height: 100%; 
     width:  100%;
-    background-color: inherit;
+    background-color: var(--app-image-background-color);
   }
 
   p {    
@@ -132,10 +139,6 @@
        class="shared-border-radius-mask"
        tabindex="-1">
 
-    <iron-icon icon="[[icon]]" 
-               tabindex="-1">
-    </iron-icon>
-
     <template is="dom-if"
               if="[[_stampLazy]]"
               restamp>
@@ -151,7 +154,7 @@
                   trigger="[[trigger]]"
                   on-lazy-image-error-changed="__errorChangedHandler"
                   on-lazy-image-loaded-changed="__loadedChangedHandler">
-      </lazy-image> 
+      </lazy-image>
     </template>
 
     <template is="dom-if"
@@ -160,7 +163,6 @@
       <responsive-image class="img"
                         alt="[[_alt]]"
                         disable-auto-sizing="[[!_enableResponsiveImageAutoSizing]]"
-                        no-fade="[[noFade]]"
                         sizing="[[sizing]]"
                         src="[[_src]]"
                         tabindex="-1"
