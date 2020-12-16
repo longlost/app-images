@@ -81,6 +81,11 @@ class LazyImage extends AppImageMixin(AppElement) {
       // Set after element is visible on screen.
       _lazySrc: String,
 
+      _noFadeClass: {
+        type: String,
+        computed: '__computeNoFadeClass(noFade)'
+      },
+
       // Determines when to use ResizeObserver to size the element
       // based on the image's intrisic sizing.
       // See 'app-image-mixin.js'.
@@ -99,8 +104,15 @@ class LazyImage extends AppImageMixin(AppElement) {
       '__orientationHeightWidthChanged(orientation, _height, _width)',
       '__placeholderErrorChanged(placeholderError)',
       '__placeholderLoadedChanged(placeholderLoaded)',
-      '__placeholderSrcChanged(placeholder, src)'
+      '__placeholderSrcChanged(placeholder, src)',
+      '__updatePlaceholderOpacity(placeholderError, placeholderLoaded)',
+      '__updateSrcOpacity(error, loaded)'
     ];
+  }
+
+
+  __computeNoFadeClass(noFade) {
+    return noFade ? 'no-fade' : '';
   }
 
 
@@ -214,6 +226,30 @@ class LazyImage extends AppImageMixin(AppElement) {
   }
 
 
+  __updatePlaceholderOpacity(error, loaded) {
+    if (error) {
+      this.$.placeholder.style['opacity'] = '0';
+      return;
+    }
+
+    if (loaded) {
+      this.$.placeholder.style['opacity'] = '1';
+    }
+  }
+
+
+  __updateSrcOpacity(error, loaded) {
+    if (error) {
+      this.$.src.style['opacity'] = '0';
+      return;
+    }
+
+    if (loaded) {
+      this.$.src.style['opacity'] = '1';
+    }
+  }
+
+
   __placeholderErrorChangedHandler(event) {
 
     // NOT using `hijackEvent`, `consumeEvent` or 
@@ -255,6 +291,7 @@ class LazyImage extends AppImageMixin(AppElement) {
 
       // Release memory resources.
       this._lazyPlaceholder = '#';
+      this.$.placeholder.style['opacity'] = '0';
     }
   }
 

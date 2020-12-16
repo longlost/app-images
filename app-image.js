@@ -48,9 +48,7 @@ import {AppImageMixin} from './app-image-mixin.js';
 
 import htmlString from './app-image.html';
 import '@longlost/app-core/app-shared-styles.js';
-import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/paper-button/paper-button.js';
-import './app-image-icons.js';
 
 
 class AppImage extends AppImageMixin(AppElement) {
@@ -87,9 +85,12 @@ class AppImage extends AppImageMixin(AppElement) {
       },
 
       // Set to true, to enable the button role mode. 
+      //
       // The element will be reachalble via keyboard tabbing, and clickable. 
-      // While focused, the 'enter' key tiggers click events. 
+      // While focused, the 'enter' and 'spacebar' keys tigger click events.
+      //
       // Button mode includes a material design ripple.
+      //
       // The 'app-image-clicked' custom event is fired 
       // after click and the ripple animation has completed.
       button: {
@@ -109,20 +110,15 @@ class AppImage extends AppImageMixin(AppElement) {
 
       disabled: Boolean,
 
-      // A placeholder 'iron-icon' src String.
-      // Visible as a watermark until image loads.
-      icon: {
-        type: String,
-        value: 'app-image-icons:image'
-      },
-
       // Only to be used when 'src' is a url string, 
       // otherwise this is auto-detected from 'src' object.
+      //
       // Must be present when using 'aspect' set to 'auto'.
       placeholder: String,
 
-      // The prefered quality level if 'type' is 'lazy' or auto-detect
+      // The prefered quality level if 'srcType' is 'lazy', or auto-detect
       // determines that 'src' requires 'lazy-image' implementation.
+      //
       // This is ignored if 'responsive-image' is being used, since
       // the browser is allowed to determine the quality/size via 'srcSet'.
       quality: {

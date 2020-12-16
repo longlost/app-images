@@ -29,10 +29,6 @@
 	  background-clip: 		 border-box;
 	}
 
-	.no-fade {
-		transition: none;
-	}
-
 	#sizedImgDiv {
 		opacity: 		0;
 	  transition: opacity 0.2s ease-in;
@@ -47,13 +43,11 @@
 		 on-load="__loadHandler"/>
 
 <div id="placeholder" 
-		 class$="sized-images [[_noFadeClass]]"
-		 alt="[[alt]]"
+		 class="sized-images"
 		 aria-label="[[alt]]">
 </div>
 
 <div id="sizedImgDiv" 
-		 class$="sized-images [[_noFadeClass]]"
-		 alt="[[alt]]"
+		 class="sized-images"
 		 aria-label="[[alt]]">
 </div>
