@@ -1,6 +1,6 @@
 {
   "name": "@longlost/app-images",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A mono-repo of elements designed to make it easy to work with images.",
   "main": "index.js",
   "scripts": {
