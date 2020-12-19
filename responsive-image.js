@@ -100,6 +100,7 @@ class ResponsiveImage extends AppImageMixin(AppElement) {
       // Reset for new images.
       this.$.sizedImgDiv.style.opacity = '0';
 
+      await schedule(); // Wait for dom to stamp.
       await isOnScreen(this, this.trigger);
 
       // NOT using closure values here to work
