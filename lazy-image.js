@@ -30,6 +30,7 @@ import {AppImageMixin} from './app-image-mixin.js';
 
 import htmlString from './lazy-image.html';
 import '@polymer/iron-image/iron-image.js';
+import './app-image-icons.js';
 
 
 class LazyImage extends AppImageMixin(AppElement) {
@@ -56,6 +57,11 @@ class LazyImage extends AppImageMixin(AppElement) {
       //
       // A valid 'placeholder' is required for auto-sizing.
       enableAutoSizing: Boolean,
+
+      icon: {
+        type: String,
+        value: 'app-image-icons:image'
+      },
 
       // Image orientation correction for 
       // photos captured on a device camera.
@@ -227,25 +233,27 @@ class LazyImage extends AppImageMixin(AppElement) {
   }
 
 
-  __updatePlaceholderOpacity(error, loaded) {
+  async __updatePlaceholderOpacity(error, loaded) {
     if (error) {
       this.$.placeholder.style['opacity'] = '0';
       return;
     }
 
     if (loaded) {
+      await schedule();
       this.$.placeholder.style['opacity'] = '1';
     }
   }
 
 
-  __updateSrcOpacity(error, loaded) {
+  async __updateSrcOpacity(error, loaded) {
     if (error) {
       this.$.src.style['opacity'] = '0';
       return;
     }
 
     if (loaded) {
+      await schedule();
       this.$.src.style['opacity'] = '1';
     }
   }

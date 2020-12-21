@@ -2,7 +2,9 @@
 <style>
       
   :host {
-    display:            block;
+    display:            flex;
+    justify-content:    center;
+    align-items:        center;
     position:           relative;
     height:             100%;
     width:              100%;
@@ -10,17 +12,28 @@
     -webkit-mask-image: -webkit-radial-gradient(white, black);
     background-color:   var(--app-background-color, grey);
 
-    /* 'image' icon watermark. */
-    background-image: url('data:image/svg+xml;utf8,<svg version=%221.1%22 xmlns=%22http://www.w3.org/2000/svg%22 xmlns:xlink=%22http://www.w3.org/1999/xlink%22 x=%220%22 y=%220%22 viewBox=%220 0 24 24%22 enable-background=%22new 0 0 24 24%22 xml:space=%22preserve%22 style=%22fill: %23727272; opacity: 0.5;%22><path d=%22M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z%22/></svg>');
+    --lazy-image-icon-height:  50%;
+    --lazy-image-icon-width:   50%;
+    --lazy-image-icon-opacity: 0.5;   
+  }
 
-    background-repeat:   no-repeat;
-    background-position: center;
-    background-size:     50% 50%; 
+  :host([hidden]) {
+    display: none;
+  }
+
+  iron-icon {
+    height:  var(--lazy-image-icon-height);
+    width:   var(--lazy-image-icon-width);
+    opacity: var(--lazy-image-icon-opacity);
   }
 
   iron-image {
-    height:             100%;
-    width:              100%;
+    position: absolute;
+    top:      0px;
+    left:     0px;
+    height:   100%;
+    width:    100%;
+
     --iron-image-width: 100%;
 
     /*
@@ -34,12 +47,6 @@
     opacity:          0;
   }
 
-  #src {
-    position: absolute;
-    top:      0px;
-    left:     0px;
-  }
-
   .fade {
     transition: opacity 0.5s linear;
   }
@@ -49,6 +56,9 @@
   }
 
 </style>
+
+
+<iron-icon icon="[[icon]]"></iron-icon>
 
 <!-- 
   Using two stacked iron-image elements here because 
