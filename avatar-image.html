@@ -1,0 +1,51 @@
+
+<style>
+
+  :host {
+
+    --avatar-image-icon-height:             100%;
+    --avatar-image-icon-width:              100%;
+    --avatar-image-keyboard-selected-color: var(--app-secondary-color);
+    --avatar-image-keyboard-selected-size:  2px;
+
+    display:       block;
+    position:      relative;
+    border-radius: 50%;
+  }
+
+  :host([hidden]) {
+    display: none;
+  }
+
+  app-image {
+    --app-image-background-color:        inherit;
+    --app-image-border-radius:           50%;
+    --app-image-icon-height:             var(--avatar-image-icon-height);
+    --app-image-icon-width:              var(--avatar-image-icon-width);
+    --app-image-icon-opacity:            1;   
+    --app-image-keyboard-selected-color: var(--avatar-secondary-color);
+    --app-image-keyboard-selected-size:  var(--avatar-image-keyboard-selected-size); 
+  } 
+
+</style>
+
+
+<app-image alt="[[alt]]"
+           aspect="square"
+           button="[[button]]"
+           crossorigin="[[crossorigin]]"
+           disabled="[[disabled]]"
+           icon="[[icon]]"
+           no-fade="[[noFade]]"
+           orientation="[[orientation]]"
+           placeholder="[[placeholder]]"
+           quality="[[quality]]"
+           raised="[[raised]]"
+           src="[[src]]"
+           src-type="[[srcType]]"
+           text="[[text]]"
+           trigger="[[trigger]]"
+           on-app-image-clicked="__avatarClicked"
+           on-app-image-error-changed="__errorChangedHandler"
+           on-app-image-loaded-changed="__loadedChangedHandler">
+</app-image>

@@ -5,6 +5,9 @@
 
     --app-image-background-color:        var(--app-background-color, grey);
     --app-image-border-radius:           0px;
+    --app-image-icon-height:             50%;
+    --app-image-icon-width:              50%;
+    --app-image-icon-opacity:            0.5;   
     --app-image-keyboard-selected-color: var(--app-secondary-color);
     --app-image-keyboard-selected-size:  2px;
     --app-image-font-size:               18px;
@@ -16,7 +19,7 @@
 
     /* Do NOT use any the following directly! NOT part of public API. */
 
-    background-color: var(--app-image-background-color);    
+    background-color: var(--app-image-background-color); 
     border-radius:    var(--app-image-border-radius);
 
     --before-aspect-ratio:          1; /* Must use the 'aspect' property. */
@@ -38,6 +41,10 @@
     padding-bottom: var(--before-padding-bottom);
   }
 
+  :host([hidden]) {
+    display: none;
+  }
+
   :host([aspect="auto"]) paper-button {
     position: relative;
   }
@@ -48,6 +55,7 @@
     left:             0px;
     height:           100%;
     width:            100%;
+    min-width:        unset;
     margin:           0px;
     padding:          0px;
     border-radius:    inherit;
@@ -89,13 +97,13 @@
 
   /* Keyboard-only focus styles. */
   #content::after {    
-    content:         '';
-    display: block;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    height: 100%;
-    width:  100%;
+    content:       '';
+    display:       block;
+    position:      absolute;
+    top:           0px;
+    left:          0px;
+    height:        100%;
+    width:         100%;
     border-radius: inherit;
   }
 
@@ -110,9 +118,24 @@
     outline: none;
   }
 
+  iron-icon {
+    height:  var(--app-image-icon-height);
+    width:   var(--app-image-icon-width);
+    opacity: var(--app-image-icon-opacity);
+  }
+
+  lazy-image {
+    --lazy-image-icon-height:  var(--app-image-icon-height);
+    --lazy-image-icon-width:   var(--app-image-icon-width);
+    --lazy-image-icon-opacity: var(--app-image-icon-opacity);   
+  }
+
   .img {
-    height: 100%; 
-    width:  100%;
+    position: absolute;
+    top:      0px;
+    left:     0px;
+    height:   100%; 
+    width:    100%;
     background-color: var(--app-image-background-color);
   }
 
@@ -139,12 +162,15 @@
        class="shared-border-radius-mask"
        tabindex="-1">
 
+    <iron-icon icon="[[icon]]"></iron-icon>
+
     <template is="dom-if"
               if="[[_stampLazy]]"
               restamp>
       <lazy-image class="img"
                   alt="[[_alt]]"
                   enable-auto-sizing="[[_enableLazyImageAutoSizing]]"
+                  icon="[[icon]]"
                   no-fade="[[noFade]]"
                   orientation="[[orientation]]"
                   placeholder="[[_placeholder]]"

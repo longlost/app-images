@@ -39,7 +39,8 @@ import {
 } from '@longlost/app-core/app-element.js';
 
 import {
-  consumeEvent, 
+  consumeEvent,
+  getRootTarget, 
   hijackEvent, 
   schedule
 } from '@longlost/app-core/utils.js';
@@ -104,11 +105,16 @@ class AppImage extends AppImageMixin(AppElement) {
         value: 'anonymous'
       },
 
+      disabled: Boolean,
+
+      icon: {
+        type: String,
+        value: 'app-image-icons:image'
+      },
+
       // Image orientation correction for 
       // photos captured on a device camera.
       orientation: Number,
-
-      disabled: Boolean,
 
       // Only to be used when 'src' is a url string, 
       // otherwise this is auto-detected from 'src' object.
@@ -391,8 +397,17 @@ class AppImage extends AppImageMixin(AppElement) {
   }
 
 
-  async __transitionendHandler() {
+  async __transitionendHandler(event) {
     try {
+
+      consumeEvent(event);
+
+      if (!this.button) { return; }
+
+      // Guard against 'paper-button' 'box-shadow' transitionend 
+      // event, which is erronious.
+      if (getRootTarget(event)?.tagName !== 'PAPER-RIPPLE') { return; }
+
       await this.clicked();
 
       this.fire('app-image-clicked');
