@@ -66,6 +66,7 @@ import htmlString           from './flip-image.html';
 
 
 class FlipImage extends AppElement {
+
   static get is() { return 'flip-image'; }
 
   static get template() {
@@ -136,6 +137,7 @@ class FlipImage extends AppElement {
 
 
   __computeRotation(orientation) {
+
     switch (orientation) {
       case 3:
         return '180';
@@ -150,6 +152,7 @@ class FlipImage extends AppElement {
 
 
   __aboveSafariNavChanged(bool) {
+
     if (bool) {
       this.style['bottom'] = '0px';
       this.style['height'] = 'unset';
@@ -162,6 +165,7 @@ class FlipImage extends AppElement {
 
   // Cache the image measurements to improve performance.
   async __srcChanged(src) {
+
     this._naturals = undefined; // Clear cached val.
 
     if (src) {
@@ -250,6 +254,7 @@ class FlipImage extends AppElement {
   // once it is not needed anymore, 
   // or if it is to be played again.
   reset() {
+    
     this.style['display'] = 'none';
 
     this.$.outter.classList.remove('last');

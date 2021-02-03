@@ -34,6 +34,7 @@ import './app-image-icons.js';
 
 
 class LazyImage extends AppImageMixin(AppElement) {
+  
   static get is() { return 'lazy-image'; }
 
   static get template() {
@@ -110,7 +111,7 @@ class LazyImage extends AppImageMixin(AppElement) {
       '__orientationHeightWidthChanged(orientation, _height, _width)',
       '__placeholderErrorChanged(placeholderError)',
       '__placeholderLoadedChanged(placeholderLoaded)',
-      '__placeholderSrcChanged(placeholder, src)',
+      '__placeholderSrcChanged(placeholder, src, customElementConnected)',
       '__updatePlaceholderOpacity(placeholderError, placeholderLoaded)',
       '__updateSrcOpacity(error, loaded)'
     ];
@@ -118,16 +119,19 @@ class LazyImage extends AppImageMixin(AppElement) {
 
 
   __computeNoFadeClass(noFade) {
+
     return noFade ? 'no-fade' : '';
   }
 
 
   __computeShouldResize(enable, orientation) {
+
     return enable || typeof orientation === 'number';
   }
 
 
   async __enableAutoSizingLazyPlaceholderChanged(enable, placeholder) {
+
     if (!enable || !placeholder || placeholder === '#') { return; }
 
     const {naturalHeight, naturalWidth} = await naturals(placeholder, this.crossorigin);
@@ -138,6 +142,7 @@ class LazyImage extends AppImageMixin(AppElement) {
 
 
   __orientationHeightWidthChanged(num, height, width) {
+
     if (typeof num !== 'number' || !height || !width) { return; }
 
     const plhPlaceholderDiv = this.select('#placeholder', this.$.placeholder);
@@ -179,17 +184,21 @@ class LazyImage extends AppImageMixin(AppElement) {
 
 
   __placeholderErrorChanged(error) {
+
     this.fire(`${this._elementType}-placeholder-error-changed`, {value: error});
   }
 
 
   __placeholderLoadedChanged(loaded) {
+
     this.fire(`${this._elementType}-placeholder-loaded-changed`, {value: loaded});
   }
 
 
-  async __placeholderSrcChanged(placeholder, src) {
+  async __placeholderSrcChanged(placeholder, src, connected) {
+
     try {
+      if (!connected) { return; }
       
       if (!placeholder && !src) { 
         this._lazyPlaceholder = '#';
@@ -234,6 +243,7 @@ class LazyImage extends AppImageMixin(AppElement) {
 
 
   async __updatePlaceholderOpacity(error, loaded) {
+
     if (error) {
       this.$.placeholder.style['opacity'] = '0';
       return;
@@ -247,6 +257,7 @@ class LazyImage extends AppImageMixin(AppElement) {
 
 
   async __updateSrcOpacity(error, loaded) {
+
     if (error) {
       this.$.src.style['opacity'] = '0';
       return;
@@ -284,6 +295,7 @@ class LazyImage extends AppImageMixin(AppElement) {
 
 
   __errorChangedHandler(event) {
+
     hijackEvent(event);
 
     this.error = event.detail.value;
@@ -291,6 +303,7 @@ class LazyImage extends AppImageMixin(AppElement) {
 
   
   async __loadedChangedHandler(event) {
+
     hijackEvent(event);
 
     this.loaded = event.detail.value;
@@ -306,6 +319,7 @@ class LazyImage extends AppImageMixin(AppElement) {
 
 
   __waitForPlaceholder() {
+
     return new Promise(resolve => {
 
       const handler = event => {

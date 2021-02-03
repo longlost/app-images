@@ -34,6 +34,7 @@ import htmlString from './responsive-image.html';
 
 
 class ResponsiveImage extends AppImageMixin(AppElement) {
+  
   static get is() { return 'responsive-image'; }
 
   static get template() {
@@ -67,25 +68,28 @@ class ResponsiveImage extends AppImageMixin(AppElement) {
   static get observers() {
     return [
       '__sizingChanged(sizing)',
-      '__srcChanged(src)'
+      '__srcChanged(src, customElementConnected)'
     ];
   }
 
 
   __computeShouldResize(disable, aspect) {
+
     return !disable && typeof aspect === 'number';
   }
 
 
   __sizingChanged(sizing) {
+
     this.$.placeholder.style.backgroundSize = sizing;
     this.$.sizedImgDiv.style.backgroundSize = sizing;
   }
 
 
-  async __srcChanged(obj) {
+  async __srcChanged(obj, connected) {
+
     try {      
-      if (!obj) { return; }
+      if (!obj || !connected) { return; }
 
       // Webpack config responsive loader output sizes: 300, 600, 900, 1200, 1500.
       // Media breakpoints: 480px, 768px, 1025px, 1281px, 1824px.
@@ -125,6 +129,7 @@ class ResponsiveImage extends AppImageMixin(AppElement) {
 
 
   __errorHandler(event) {
+
     consumeEvent(event);
 
     this.loaded = false;
@@ -133,6 +138,7 @@ class ResponsiveImage extends AppImageMixin(AppElement) {
 
 
   async __loadHandler(event) {
+
     consumeEvent(event);
 
     this.loaded = true;
