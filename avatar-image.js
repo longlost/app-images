@@ -21,6 +21,7 @@ import './app-image-icons.js';
 
 
 class AvatarImage extends AppElement {
+
   static get is() { return 'avatar-image'; }
 
   static get template() {
@@ -136,16 +137,19 @@ class AvatarImage extends AppElement {
 
 
   __errorChanged(error) {
+
     this.fire('avatar-image-error-changed', {value: error});
   }
 
 
   __loadedChanged(loaded) {
+
     this.fire('avatar-image-loaded-changed', {value: loaded});
   }
 
 
   __errorChangedHandler(event) {
+
     hijackEvent(event);
 
     this.error = event.detail.value;
@@ -153,6 +157,7 @@ class AvatarImage extends AppElement {
 
   
   __loadedChangedHandler(event) {
+
     hijackEvent(event);
 
     this.loaded = event.detail.value;
@@ -160,6 +165,7 @@ class AvatarImage extends AppElement {
 
 
   __avatarClicked(event) {
+    
     hijackEvent(event);
 
     this.fire('avatar-image-clicked');

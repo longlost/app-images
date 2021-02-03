@@ -53,6 +53,7 @@ import '@polymer/paper-button/paper-button.js';
 
 
 class AppImage extends AppImageMixin(AppElement) {
+
   static get is() { return 'app-image'; }
 
   static get template() {
@@ -221,6 +222,7 @@ class AppImage extends AppImageMixin(AppElement) {
 
 
   __computeAlt(alt, description, displayName) {
+
     if (alt) { return alt; }
 
     if (description) { return description; }
@@ -232,6 +234,7 @@ class AppImage extends AppImageMixin(AppElement) {
 
 
   __computeDetectedType(src, type) {
+
     if (type && typeof type === 'string') {
 
       if (type === 'url' || type === 'file' || type === 'responsive') { 
@@ -254,16 +257,19 @@ class AppImage extends AppImageMixin(AppElement) {
 
 
   __computeEnableLazyImageAutoSizing(aspect, type) {
+
     return aspect === 'auto' && type === 'url';
   }
 
 
   __computeEnableResponsiveImageAutoSizing(aspect, type) {
+
     return aspect === 'auto' && type === 'responsive';
   }
 
 
   __computePlaceholder(placeholder, src, type) {
+
     if (placeholder) { return placeholder; }
 
     if (!src || !type || type === 'url') { return; }
@@ -273,11 +279,13 @@ class AppImage extends AppImageMixin(AppElement) {
 
   // See 'app-image-mixin.js'.
   __computeShouldResize(aspect, type) {
+
     return aspect === 'auto' && type === 'file';
   }
 
 
   __computeSrc(src, quality, type) {
+
     if (!src || !quality || !type) { return; }
 
     if (type === 'url' || type === 'responsive') { return src; }
@@ -294,21 +302,25 @@ class AppImage extends AppImageMixin(AppElement) {
 
 
   __computeStampLazy(type) {
+
     return type === 'url' || type === 'file';
   }
 
 
   __computeStampResponsive(type) {
+
     return type === 'responsive';
   }
 
 
   __computeTabindex(button, disabled) {
+
     return button && !disabled ? '0' : '-1';
   }
 
 
   __computeRatio(aspect) {
+
     switch (aspect) {
 
       case 'classic':
@@ -330,6 +342,7 @@ class AppImage extends AppImageMixin(AppElement) {
 
 
   __ratioChanged(ratio) {
+
     if (ratio === 'fill') {
       this.updateStyles({
         '--before-height':         'var(--before-fill-height)',
@@ -347,6 +360,7 @@ class AppImage extends AppImageMixin(AppElement) {
 
 
   __stampLazyChanged(stamp) {
+
     if (stamp) {
       import(
         /* webpackChunkName: 'lazy-image' */ 
@@ -357,6 +371,7 @@ class AppImage extends AppImageMixin(AppElement) {
 
 
   __stampResponsiveChanged(stamp) {
+
     if (stamp) {
       import(
         /* webpackChunkName: 'responsive-image' */ 
@@ -367,6 +382,7 @@ class AppImage extends AppImageMixin(AppElement) {
 
   // <lazy-image> / <responsive-image> event handler.
   __errorChangedHandler(event) {
+
     hijackEvent(event);
 
     const {value} = event.detail;
@@ -376,6 +392,7 @@ class AppImage extends AppImageMixin(AppElement) {
 
   // <lazy-image> / <responsive-image> event handler.
   async __loadedChangedHandler(event) {
+
     hijackEvent(event);
 
     const {value: loaded} = event.detail;
@@ -398,6 +415,7 @@ class AppImage extends AppImageMixin(AppElement) {
 
 
   async __transitionendHandler(event) {
+    
     try {
 
       consumeEvent(event);
