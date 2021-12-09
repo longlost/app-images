@@ -207,6 +207,10 @@ class LazyImage extends AppImageMixin(AppElement) {
       }
 
       await schedule(); // Wait for dom to stamp.
+
+      // Double check that this is still an active dom node.
+      if (!this instanceof Element) { return; }
+      
       await isOnScreen(this, this.trigger);
 
       // NOTICE!! - NOT using closure values here to work
