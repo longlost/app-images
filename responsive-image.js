@@ -106,10 +106,13 @@ class ResponsiveImage extends AppImageMixin(AppElement) {
 
       await schedule(); // Wait for dom to stamp.
 
-      // Double check that this is still an active dom node.
-      if (!this instanceof Element) { return; }
+      // Double check that this and its child are still active dom nodes.
+      if (
+        this               instanceof Element === false || 
+        this.$.placeholder instanceof Element === false
+      ) { return; }
 
-      await isOnScreen(this, this.trigger);
+      await isOnScreen(this.$.placeholder, this.trigger);
 
       // NOT using closure values here to work
       // correctly within template repeaters
