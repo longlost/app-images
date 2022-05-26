@@ -48,7 +48,7 @@ import {
 import {AppImageMixin} from './app-image-mixin.js';
 
 import htmlString from './app-image.html';
-import '@longlost/app-core/app-shared-styles.js';
+import '@longlost/app-core/app-shared-styles.css';
 import '@polymer/paper-button/paper-button.js';
 
 
