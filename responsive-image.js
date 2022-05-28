@@ -16,10 +16,7 @@
   * 
   **/
 
-import {
-  AppElement, 
-  html
-} from '@longlost/app-core/app-element.js';
+import {AppElement} from '@longlost/app-core/app-element.js';
 
 import {
   consumeEvent,
@@ -30,7 +27,7 @@ import {
 
 import {AppImageMixin} from './app-image-mixin.js';
 
-import htmlString from './responsive-image.html';
+import template from './responsive-image.html';
 
 
 class ResponsiveImage extends AppImageMixin(AppElement) {
@@ -38,7 +35,7 @@ class ResponsiveImage extends AppImageMixin(AppElement) {
   static get is() { return 'responsive-image'; }
 
   static get template() {
-    return html([htmlString]);
+    return template;
   }
 
 

@@ -33,10 +33,7 @@
   **/
 
 
-import {
-  AppElement, 
-  html
-} from '@longlost/app-core/app-element.js';
+import {AppElement} from '@longlost/app-core/app-element.js';
 
 import {
   consumeEvent,
@@ -47,7 +44,7 @@ import {
 
 import {AppImageMixin} from './app-image-mixin.js';
 
-import htmlString from './app-image.html';
+import template from './app-image.html';
 import '@longlost/app-core/app-shared-styles.css';
 import '@polymer/paper-button/paper-button.js';
 
@@ -57,7 +54,7 @@ class AppImage extends AppImageMixin(AppElement) {
   static get is() { return 'app-image'; }
 
   static get template() {
-    return html([htmlString]);
+    return template;
   }
 
 
