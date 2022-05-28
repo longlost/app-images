@@ -13,10 +13,7 @@
   *
   **/
 
-import {
-  AppElement, 
-  html
-} from '@longlost/app-core/app-element.js';
+import {AppElement} from '@longlost/app-core/app-element.js';
 
 import {
   hijackEvent,
@@ -28,7 +25,7 @@ import {
 
 import {AppImageMixin} from './app-image-mixin.js';
 
-import htmlString from './lazy-image.html';
+import template from './lazy-image.html';
 import '@polymer/iron-image/iron-image.js';
 import './app-image-icons.js';
 
@@ -38,7 +35,7 @@ class LazyImage extends AppImageMixin(AppElement) {
   static get is() { return 'lazy-image'; }
 
   static get template() {
-    return html([htmlString]);
+    return template;
   }
 
 

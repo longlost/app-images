@@ -13,9 +13,9 @@
   *
   **/
 
-import {AppElement, html} from '@longlost/app-core/app-element.js';
-import {hijackEvent}      from '@longlost/app-core/utils.js';
-import htmlString         from './avatar-image.html';
+import {AppElement}  from '@longlost/app-core/app-element.js';
+import {hijackEvent} from '@longlost/app-core/utils.js';
+import template      from './avatar-image.html';
 import './app-image.js';
 import './app-image-icons.js';
 
@@ -25,7 +25,7 @@ class AvatarImage extends AppElement {
   static get is() { return 'avatar-image'; }
 
   static get template() {
-    return html([htmlString]);
+    return template;
   }
 
 

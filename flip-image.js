@@ -58,11 +58,11 @@
   **/
 
 
-import {AppElement, html}   from '@longlost/app-core/app-element.js';
+import {AppElement}         from '@longlost/app-core/app-element.js';
 import {flip}               from '@longlost/app-core/animation.js';
 import {naturals, schedule} from '@longlost/app-core/utils.js';
 import correction           from './flip-correction.js';
-import htmlString           from './flip-image.html';
+import template             from './flip-image.html';
 
 
 class FlipImage extends AppElement {
@@ -70,7 +70,7 @@ class FlipImage extends AppElement {
   static get is() { return 'flip-image'; }
 
   static get template() {
-    return html([htmlString]);
+    return template;
   }
 
 
