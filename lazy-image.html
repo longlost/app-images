@@ -12,9 +12,10 @@
     -webkit-mask-image: -webkit-radial-gradient(white, black);
     background-color:   var(--app-background-color, grey);
 
-    --lazy-image-icon-height:  50%;
-    --lazy-image-icon-width:   50%;
-    --lazy-image-icon-opacity: 0.5;   
+    --lazy-image-fade-duration: 500ms;
+    --lazy-image-icon-height:   50%;
+    --lazy-image-icon-width:    50%;
+    --lazy-image-icon-opacity:  0.5;   
   }
 
   :host([hidden]) {
@@ -27,32 +28,42 @@
     opacity: var(--lazy-image-icon-opacity);
   }
 
-  iron-image {
-    position: absolute;
-    top:      0px;
-    left:     0px;
-    height:   100%;
-    width:    100%;
-
-    --iron-image-width: 100%;
-
-    /*
-      Addresses an issue in Chrome where the image may 
-      render slightly lower than its container.
-    */
-    overflow: visible;
-
-    /* Important for fade effect to work. */
-    background-color: transparent;
-    opacity:          0;
+  img {
+    width:   0px;
+    height:  0px;
+    opacity: 0;
   }
 
-  .fade {
-    transition: opacity 0.5s linear;
+  .sized-images {
+    position:        absolute;
+    top:             0px;
+    left:            0px;
+    height:          100%;
+    width:           100%;
+    overflow:        inherit;
+    border-radius:   inherit;
+    background-clip: border-box;
+    opacity:         0;
+  }
+
+  @keyframes show {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .show {
+    animation-name:            show;
+    animation-duration:        var(--lazy-image-fade-duration);
+    animation-fill-mode:       forwards;
+    animation-timing-function: ease-in;
   }
 
   .no-fade {
-    transition: none;
+    animation-duration: 16ms;
   }
 
 </style>
@@ -60,34 +71,34 @@
 
 <iron-icon icon="[[icon]]"></iron-icon>
 
-<!-- 
-  Using two stacked iron-image elements here because 
-  its fade transition between 'placeholder' and 
-  'src' is inconsistent.
 
-  It often flashes the background-color momentarily 
-  when switching to the 'src'. 
--->
-
-<iron-image id="placeholder"
-            class$="fade [[_noFadeClass]]"
-            alt="[[alt]]"
-            crossorigin="[[crossorigin]]"
-            preload
-            sizing="[[sizing]]" 
-            src="[[_lazyPlaceholder]]"
-            on-error-changed="__placeholderErrorChangedHandler"
-            on-loaded-changed="__placeholderLoadedChangedHandler">
-</iron-image>
+<img id="placeholderImg" 
+     alt$="[[alt]]"
+     crossorigin$="[[crossorigin]]"
+     loading="lazy" 
+     src$="[[_placeholder]]"
+     on-load="__placeholderLoadHandler" 
+     on-error="__placeholderErrorHandler">
+    
+<div id="placeholder" 
+     class$="sized-images [[_noFadeClass]]"
+     on-animationend="__placeholderAnimationHandler"
+     on-animationcancel="__placeholderAnimationHandler">
+</div>
 
 
-<iron-image id="src"
-            class$="fade [[_noFadeClass]]"
-            alt="[[alt]]"
-            crossorigin="[[crossorigin]]"
-            preload
-            sizing="[[sizing]]" 
-            src="[[_lazySrc]]"
-            on-error-changed="__errorChangedHandler"
-            on-loaded-changed="__loadedChangedHandler">
-</iron-image>
+<img id="srcImg" 
+     alt$="[[alt]]"
+     crossorigin$="[[crossorigin]]"
+     loading="lazy" 
+     src$="[[_src]]"
+     on-load="__srcLoadHandler" 
+     on-error="__srcErrorHandler">
+    
+<div id="src" 
+     class$="sized-images [[_noFadeClass]]"
+     aria-label$="[[alt]]"
+     role="img"
+     on-animationend="__srcAnimationHandler"
+     on-animationcancel="__srcAnimationHandler">
+</div>

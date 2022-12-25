@@ -16,17 +16,15 @@
 import {AppElement} from '@longlost/app-core/app-element.js';
 
 import {
-  hijackEvent,
-  isOnScreen,
-  naturals,
-  schedule,
-  wait
+  consumeEvent, 
+  naturals, 
+  schedule
 } from '@longlost/app-core/utils.js';
 
 import {AppImageMixin} from './app-image-mixin.js';
 
 import template from './lazy-image.html';
-import '@polymer/iron-image/iron-image.js';
+import '@polymer/iron-icon/iron-icon.js';
 import './app-image-icons.js';
 
 
@@ -34,9 +32,7 @@ class LazyImage extends AppImageMixin(AppElement) {
   
   static get is() { return 'lazy-image'; }
 
-  static get template() {
-    return template;
-  }
+  static get template() { return template; }
 
 
   static get properties() {
@@ -56,6 +52,8 @@ class LazyImage extends AppImageMixin(AppElement) {
       // A valid 'placeholder' is required for auto-sizing.
       enableAutoSizing: Boolean,
 
+      fadedIn: Boolean,
+
       icon: {
         type: String,
         value: 'app-image-icons:image'
@@ -71,7 +69,17 @@ class LazyImage extends AppImageMixin(AppElement) {
 
       placeholderError: Boolean,
 
+      placeholderFadedIn: Boolean,
+
       placeholderLoaded: Boolean,
+
+      // When a sizing option is used (`cover` or `contain`), 
+      // this determines how the image is aligned within the 
+      // element bounds.
+      position: {
+        type: String, 
+        value: 'center'
+      },
 
       _elementType: {
         type: String,
@@ -79,15 +87,14 @@ class LazyImage extends AppImageMixin(AppElement) {
         readOnly: true
       },
 
-      // Set after element is visible on screen.
-      _lazyPlaceholder: String,
-
-      // Set after element is visible on screen.
-      _lazySrc: String,
-
       _noFadeClass: {
         type: String,
         computed: '__computeNoFadeClass(noFade)'
+      },
+
+      _placeholder: {
+        type: String,
+        computed: '__computeImgSrc(placeholder)'
       },
 
       // Determines when to use ResizeObserver to size the element
@@ -96,6 +103,11 @@ class LazyImage extends AppImageMixin(AppElement) {
       _shouldResize: {
         type: Boolean,
         computed: '__computeShouldResize(enableAutoSizing, orientation)'
+      },
+
+      _src: {
+        type: String,
+        computed: '__computeImgSrc(src)'
       }
  
     }
@@ -105,12 +117,16 @@ class LazyImage extends AppImageMixin(AppElement) {
   static get observers() {
     return [
       '__enableAutoSizingLazyPlaceholderChanged(enableAutoSizing, _lazyPlaceholder)',
+      '__fadedInChanged(fadedIn)',
       '__orientationHeightWidthChanged(orientation, _height, _width)',
       '__placeholderErrorChanged(placeholderError)',
+      '__placeholderFadedInChanged(placeholderFadedIn)',
       '__placeholderLoadedChanged(placeholderLoaded)',
-      '__placeholderSrcChanged(placeholder, src, customElementConnected)',
-      '__updatePlaceholderOpacity(placeholderError, placeholderLoaded)',
-      '__updateSrcOpacity(error, loaded)'
+      '__positionSizingChanged(position, sizing)',
+      '__updatePlaceholderBackgroundImage(_placeholder)',
+      '__updatePlaceholderClass(placeholderLoaded)',
+      '__updateSrcBackgroundImage(_src)',
+      '__updateSrcClass(loaded)'
     ];
   }
 
@@ -118,6 +134,12 @@ class LazyImage extends AppImageMixin(AppElement) {
   __computeNoFadeClass(noFade) {
 
     return noFade ? 'no-fade' : '';
+  }
+
+  // Use hash as a default to clear img tags.
+  __computeImgSrc(str = '#') {
+
+    return str;
   }
 
 
@@ -138,17 +160,28 @@ class LazyImage extends AppImageMixin(AppElement) {
   }
 
 
+  __fadedInChanged(fadedIn) {
+
+    if (fadedIn) {
+
+      // Release unused resources.
+      this.$.placeholderImg.src                    = '#';
+      this.$.placeholder.style['background-image'] = 'url(#)';
+      this.$.placeholder.classList.remove('show');
+
+      this.fire(`${this._elementType}-faded-in`);
+    }
+  }
+
+
   __orientationHeightWidthChanged(num, height, width) {
 
     if (typeof num !== 'number' || !height || !width) { return; }
 
-    const plhPlaceholderDiv = this.select('#placeholder', this.$.placeholder);
-    const plhSrcDiv         = this.select('#sizedImgDiv', this.$.placeholder);
-    const srcPlaceholderDiv = this.select('#placeholder', this.$.src);
-    const srcSrcDiv         = this.select('#sizedImgDiv', this.$.src);
+    const divs = [this.$.placeholder, this.$.src];
 
     if (num <= 1) {
-      [plhPlaceholderDiv, plhSrcDiv, srcPlaceholderDiv, srcSrcDiv].forEach(div => {
+      divs.forEach(div => {
         div.style.height    = '100%';
         div.style.width     = '100%';
         div.style.top       = '0px';
@@ -169,7 +202,7 @@ class LazyImage extends AppImageMixin(AppElement) {
       const hRatio = deg === '180' ? 100 : ((width / height) * 100);
       const wRatio = deg === '180' ? 100 : ((height / width) * 100);
 
-      [plhPlaceholderDiv, plhSrcDiv, srcPlaceholderDiv, srcSrcDiv].forEach(div => {
+      divs.forEach(div => {
         div.style.height    = `${hRatio}%`;
         div.style.width     = `${wRatio}%`;
         div.style.top       = '50%';
@@ -186,160 +219,138 @@ class LazyImage extends AppImageMixin(AppElement) {
   }
 
 
+  __placeholderFadedInChanged(fadedIn) {
+
+    if (fadedIn) {
+
+      this.fire(`${this._elementType}-placeholder-faded-in`);
+    }
+  }
+
+
   __placeholderLoadedChanged(loaded) {
 
     this.fire(`${this._elementType}-placeholder-loaded-changed`, {value: loaded});
   }
 
 
-  async __placeholderSrcChanged(placeholder, src, connected) {
+  __positionSizingChanged(position, sizing) {
 
-    try {
-      if (!connected) { return; }
-      
-      if (!placeholder && !src) { 
-        this._lazyPlaceholder = '#';
-        this._lazySrc         = '#';
-        return; 
-      }
+    this.$.placeholder.style['background-size'] = sizing;
+    this.$.src.style['background-size']         = sizing;
 
-      await schedule(); // Wait for dom to stamp.
-
-      // Double check that this and its child are still active dom nodes.
-      if (
-        this               instanceof Element === false || 
-        this.$.placeholder instanceof Element === false
-      ) { return; }
-
-      await isOnScreen(this.$.placeholder, this.trigger);
-
-      // NOTICE!! - NOT using closure values here to work
-      // correctly within template repeaters
-      // where data can be changed by the time the 
-      // above schedule and isOnScreen have resolved.
-      
-      // Wait for placeholder to fully load or fail
-      // before starting to load the src.
-      if (this.placeholder && (this.placeholder !== this._lazyPlaceholder)) {        
-
-        this.$.src.style['background-color'] = 'transparent';
-
-        await schedule();
-
-        this._lazyPlaceholder = this.placeholder;
-
-        await this.__waitForPlaceholder();
-      }
-      else {
-        this.$.src.style['background-color'] = 'inherit';
-      }
-
-      await schedule();
-
-      // NOT using closure values here!
-      this._lazySrc = this.src || '#';
+    if (sizing) {
+      this.$.placeholder.style['background-position'] = position;
+      this.$.src.style['background-position']         = position;
+      this.$.placeholder.style['background-repeat']   = 'no-repeat';
+      this.$.src.style['background-repeat']           = 'no-repeat';
     }
-    catch (error) {
-      if (error === 'Element removed.') { return; } // Noop for isOnScreen rejection.
-      console.error(error);
+    else {
+      this.$.placeholder.style['background-position'] = '';
+      this.$.src.style['background-position']         = '';
+      this.$.placeholder.style['background-repeat']   = '';
+      this.$.src.style['background-repeat']           = '';
     }
   }
 
 
-  async __updatePlaceholderOpacity(error, loaded) {
+  __updatePlaceholderBackgroundImage(placeholder) {
 
-    if (error) {
-      this.$.placeholder.style['opacity'] = '0';
+    this.$.placeholder.style['background-image'] = `url(${placeholder})`;
+  }
+
+
+  __updatePlaceholderClass(loaded) {
+
+    if (loaded) {
+
+      this.$.placeholder.classList.add('show');
+
       return;
     }
 
-    if (loaded) {
-      await schedule();
-      this.$.placeholder.style['opacity'] = '1';
-    }
+    this.$.placeholder.classList.remove('show');
   }
 
 
-  async __updateSrcOpacity(error, loaded) {
+  __updateSrcBackgroundImage(src) {
 
-    if (error) {
-      this.$.src.style['opacity'] = '0';
+    this.$.src.style['background-image'] = `url(${src})`;
+  }
+
+
+  __updateSrcClass(loaded) {
+
+    if (loaded) {
+      
+      this.$.src.classList.add('show');
+
       return;
     }
 
-    if (loaded) {
-      await schedule();
-      this.$.src.style['opacity'] = '1';
-    }
+    this.$.src.classList.remove('show');
   }
 
 
-  __placeholderErrorChangedHandler(event) {
+  __placeholderErrorHandler(event) {
 
-    // NOT using `hijackEvent`, `consumeEvent` or 
-    // `event.stopImmediatePropagation` here as to 
-    // not break the listeners in the 
-    // `__waitForPlaceholder` method.
-    event.stopPropagation();
+    consumeEvent(event);
 
-    this.placeholderError = event.detail.value;
+    this.placeholderError   = true;
+    this.placeholderFadedIn = false;
+    this.placeholderLoaded  = false;
   }
 
 
-  __placeholderLoadedChangedHandler(event) {
+  async __placeholderLoadHandler(event) {
 
-    // NOT using `hijackEvent`, `consumeEvent` or 
-    // `event.stopImmediatePropagation` here as to 
-    // not break the listeners in the 
-    // `__waitForPlaceholder` method.
-    event.stopPropagation();
+    consumeEvent(event);
 
-    this.placeholderLoaded = event.detail.value;
+    // An attempt to reduce occurrences of 
+    // "loaded but not painted" situations.
+    await schedule();  
+
+    this.placeholderError  = false;
+    this.placeholderLoaded = true;
   }
 
 
-  __errorChangedHandler(event) {
+  __placeholderAnimationHandler(event) {
 
-    hijackEvent(event);
+    consumeEvent(event);
 
-    this.error = event.detail.value;
-  }
-
-  
-  async __loadedChangedHandler(event) {
-
-    hijackEvent(event);
-
-    this.loaded = event.detail.value;
-
-    if (this.loaded) {
-      await wait(500); // Wait for src to fade in.
-
-      // Release memory resources.
-      this._lazyPlaceholder = '#';
-      this.$.placeholder.style['opacity'] = '0';
-    }
+    this.placeholderFadedIn = true;
   }
 
 
-  __waitForPlaceholder() {
+  __srcErrorHandler(event) {
 
-    return new Promise(resolve => {
+    consumeEvent(event);
 
-      const handler = event => {
-        const {value} = event.detail;
+    this.error   = true;
+    this.fadedIn = false;
+    this.loaded  = false;
+  }
 
-        if (value) {
-          this.$.placeholder.removeEventListener('loaded-changed', handler);
-          this.$.placeholder.removeEventListener('error-changed',  handler);
 
-          resolve();
-        }
-      };
+  async __srcLoadHandler(event) {
 
-      this.$.placeholder.addEventListener('loaded-changed', handler);
-      this.$.placeholder.addEventListener('error-changed',  handler);
-    });
+    consumeEvent(event);
+
+    // An attempt to reduce occurrences of 
+    // "loaded but not painted" situations.
+    await schedule();
+
+    this.error  = false;
+    this.loaded = true;
+  }
+
+
+  __srcAnimationHandler(event) {
+
+    consumeEvent(event);
+
+    this.fadedIn = true;
   }
 
 }
