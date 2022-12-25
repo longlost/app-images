@@ -1,6 +1,6 @@
 {
   "name": "@longlost/app-images",
-  "version": "2.2.4",
+  "version": "2.3.0",
   "description": "A mono-repo of elements designed to make it easy to work with images.",
   "main": "index.js",
   "scripts": {
@@ -17,10 +17,9 @@
   },
   "homepage": "https://github.com/longlost/app-images#readme",
   "dependencies": {
-    "@longlost/app-core": "^9.0.1",
+    "@longlost/app-core": "^9.0.5",
     "@polymer/iron-icon": "^3.0.1",
     "@polymer/iron-iconset-svg": "^3.0.1",
-    "@polymer/iron-image": "^3.0.2",
     "@polymer/paper-button": "^3.0.1"
   }
 }
