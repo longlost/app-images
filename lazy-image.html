@@ -56,13 +56,21 @@
   }
 
   .show {
-    animation-name:            show;
+    animation-name: show;
+
+    /* 
+      The delay is a buffer used to improve issues 
+      with flashes of loaded, but unrendered or 
+      partially rendered images. 
+    */
+    animation-delay:           64ms; 
     animation-duration:        var(--lazy-image-fade-duration);
     animation-fill-mode:       forwards;
     animation-timing-function: ease-in;
   }
 
   .no-fade {
+    animation-delay:    unset;
     animation-duration: 16ms;
   }
 

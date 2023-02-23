@@ -123,10 +123,8 @@ class LazyImage extends AppImageMixin(AppElement) {
       '__placeholderFadedInChanged(placeholderFadedIn)',
       '__placeholderLoadedChanged(placeholderLoaded)',
       '__positionSizingChanged(position, sizing)',
-      '__updatePlaceholderBackgroundImage(_placeholder)',
-      '__updatePlaceholderClass(placeholderLoaded)',
-      '__updateSrcBackgroundImage(_src)',
-      '__updateSrcClass(loaded)'
+      '__updatePlaceholderDiv(_placeholder, placeholderLoaded)',
+      '__updateSrcDiv(_src, loaded)'
     ];
   }
 
@@ -167,7 +165,7 @@ class LazyImage extends AppImageMixin(AppElement) {
       // Release unused resources.
       this.$.placeholderImg.src                    = '#';
       this.$.placeholder.style['background-image'] = 'url(#)';
-      this.$.placeholder.classList.remove('show');
+      this.$.placeholder.classList.remove('show');      
 
       this.fire(`${this._elementType}-faded-in`);
     }
@@ -254,40 +252,32 @@ class LazyImage extends AppImageMixin(AppElement) {
   }
 
 
-  __updatePlaceholderBackgroundImage(placeholder) {
-
-    this.$.placeholder.style['background-image'] = `url(${placeholder})`;
-  }
-
-
-  __updatePlaceholderClass(loaded) {
+  __updatePlaceholderDiv(placeholder, loaded) {
 
     if (loaded) {
 
+      this.$.placeholder.style['background-image'] = `url(${placeholder})`;
       this.$.placeholder.classList.add('show');
 
       return;
     }
 
+    this.$.placeholder.style['background-image'] = 'url(#)';
     this.$.placeholder.classList.remove('show');
   }
 
 
-  __updateSrcBackgroundImage(src) {
-
-    this.$.src.style['background-image'] = `url(${src})`;
-  }
-
-
-  __updateSrcClass(loaded) {
+  __updateSrcDiv(src, loaded) {
 
     if (loaded) {
       
+      this.$.src.style['background-image'] = `url(${src})`;
       this.$.src.classList.add('show');
 
       return;
     }
 
+    this.$.src.style['background-image'] = 'url(#)';
     this.$.src.classList.remove('show');
   }
 
